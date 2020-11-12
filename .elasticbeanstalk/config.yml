@@ -1,15 +1,15 @@
 branch-defaults:
   master:
-    environment: SpeedgolfMern-env
+    environment: FantasyFootball-env
 environment-defaults:
   SpeedgolfMern-env:
     branch: null
     repository: null
 global:
-  application_name: speedgolf-MERN
+  application_name: fantasy football
   default_ec2_keyname: null
   default_platform: Node.js 12 running on 64bit Amazon Linux 2
-  default_region: us-west-2
+  default_region: us-east-2
   include_git_submodules: true
   instance_profile: null
   platform_name: null
