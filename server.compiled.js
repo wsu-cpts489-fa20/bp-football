@@ -6,6 +6,8 @@ var _passportGithub = _interopRequireDefault(require("passport-github"));
 
 var _passportLocal = _interopRequireDefault(require("passport-local"));
 
+var _passportGoogleOauth = _interopRequireDefault(require("passport-google-oauth2"));
+
 var _expressSession = _interopRequireDefault(require("express-session"));
 
 var _regeneratorRuntime = _interopRequireDefault(require("regenerator-runtime"));
@@ -35,6 +37,7 @@ var DEPLOY_URL = "http://localhost:8081";
 var PORT = process.env.HTTP_PORT || LOCAL_PORT;
 var GithubStrategy = _passportGithub["default"].Strategy;
 var LocalStrategy = _passportLocal["default"].Strategy;
+var GoogleStrategy = _passportGoogleOauth["default"].Strategy;
 var app = (0, _express["default"])(); //////////////////////////////////////////////////////////////////////////
 //MONGOOSE SET-UP
 //The following code sets up the app to connect to a MongoDB database
@@ -272,15 +275,49 @@ function () {
   return function (_x5, _x6, _x7, _x8) {
     return _ref2.apply(this, arguments);
   };
-}()));
+}())); // const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
+// passport.use(
+//   new GoogleStrategy(
+//     {
+//       clientID: process.env.GG_CLIENT_ID,
+//       clientSecret: process.env.GG_CLIENT_SECRET,
+//       callbackURL: DEPLOY_URL + "/auth/google/callback",
+//     },
+//     async (accessToken, refreshToken, profile, done) => {
+//       console.log("User authenticated through Google! In passport callback.");
+//       //Our convention is to build userId from displayName and provider
+//       const userId = `${profile.sub}@${profile.provider}`;
+//       //See if document with this unique userId exists in database
+//       let currentUser = await User.findOne({ id: userId });
+//       if (!currentUser) {
+//         //Add this user to the database
+//         currentUser = await new User({
+//           id: userId,
+//           displayName: profile.displayName,
+//           authStrategy: profile.provider,
+//           profilePicUrl: profile.photos[0].value,
+//           games: [],
+//         }).save();
+//       }
+//       return done(null, currentUser);
+//     }
+//   )
+// );
+//////////////////////////////////////////////////////////////////////////
+//PASSPORT SET-UP
+//The following code sets up the app with OAuth authentication using
+//the 'google' strategy in passport.js.
+//////////////////////////////////////////////////////////////////////////
 
-var GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 
 _passport["default"].use(new GoogleStrategy({
   clientID: process.env.GG_CLIENT_ID,
   clientSecret: process.env.GG_CLIENT_SECRET,
   callbackURL: DEPLOY_URL + "/auth/google/callback"
-}, /*#__PURE__*/function () {
+},
+/*#__PURE__*/
+//The following function is called after user authenticates with github
+function () {
   var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee3(accessToken, refreshToken, profile, done) {
     var userId, currentUser;
     return _regeneratorRuntime["default"].wrap(function _callee3$(_context3) {
@@ -289,7 +326,7 @@ _passport["default"].use(new GoogleStrategy({
           case 0:
             console.log("User authenticated through Google! In passport callback."); //Our convention is to build userId from displayName and provider
 
-            userId = "".concat(profile.sub, "@").concat(profile.provider); //See if document with this unique userId exists in database
+            userId = "".concat(profile.sub, "@").concat(profile.provider); //See if document with this unique userId exists in database 
 
             _context3.next = 4;
             return User.findOne({
@@ -306,10 +343,11 @@ _passport["default"].use(new GoogleStrategy({
 
             _context3.next = 8;
             return new User({
-              id: userId,
+              //id: profile.displayName + "@" + profile.provider + ".com",
+              id: profile.emails[0].value,
               displayName: profile.displayName,
               authStrategy: profile.provider,
-              profilePicUrl: profile.photos[0].value,
+              profilePicURL: profile.photos[0].value,
               games: []
             }).save();
 
