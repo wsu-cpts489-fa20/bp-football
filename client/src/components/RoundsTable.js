@@ -43,7 +43,7 @@ class RoundsTable extends React.Component {
   //ToDo: populate table with game information instead of round info
   renderTable = () => {
     let table = [];
-    for (let r = 0; r < this.props.rounds.length; ++r) {
+    for (let r = 0; r < this.props.games.length; ++r) {
       table.push(
         <tr key={r}>
           <td>{this.props.rounds[r].date.substring(0, 10)}</td>
@@ -89,10 +89,10 @@ class RoundsTable extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {Object.keys(this.props.rounds).length === 0 ? (
+            {Object.keys(this.props.games).length === 0 ? (
               <tr>
                 <td colSpan="5" style={{ fontStyle: "italic" }}>
-                  No Data to show
+                  No data to show
                 </td>
               </tr>
             ) : (

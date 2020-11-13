@@ -114,17 +114,17 @@ class Rounds extends React.Component {
                           <span className="fa fa-times"></span>
                         </button></div>: null}
                     <RoundsTable 
-                        rounds={this.props.userObj.rounds}
+                        games={this.props.userObj.games}
                         setEditId={this.setEditId}
                         setDeleteId={this.setDeleteId}
                         deleteRound={this.deleteRound}
                         changeMode={this.props.changeMode}
                         menuOpen={this.props.menuOpen} /> 
-                    <FloatingButton
+                    {/* <FloatingButton
                         handleClick={() => 
                         this.props.changeMode(AppMode.ROUNDS_LOGROUND)}
                         menuOpen={this.props.menuOpen}
-                        icon={"fa fa-plus"} />
+                        icon={"fa fa-plus"} /> */}
                     </>
                 );
             case AppMode.ROUNDS_LOGROUND:
