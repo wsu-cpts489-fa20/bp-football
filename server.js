@@ -167,6 +167,35 @@ passport.use(
   )
 );
 
+const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GG_CLIENT_ID,
+      clientSecret: process.env.GG_CLIENT_SECRET,
+      callbackURL: DEPLOY_URL + "/auth/google/callback",
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      console.log("User authenticated through Google! In passport callback.");
+      //Our convention is to build userId from displayName and provider
+      const userId = `${profile.sub}@${profile.provider}`;
+      //See if document with this unique userId exists in database
+      let currentUser = await User.findOne({ id: userId });
+      if (!currentUser) {
+        //Add this user to the database
+        currentUser = await new User({
+          id: userId,
+          displayName: profile.displayName,
+          authStrategy: profile.provider,
+          profilePicUrl: profile.photos[0].value,
+          games: [],
+        }).save();
+      }
+      return done(null, currentUser);
+    }
+  )
+);
+
 //Serialize the current user to the session
 passport.serializeUser((user, done) => {
   console.log("In serializeUser.");
@@ -235,6 +264,23 @@ app.get(
   passport.authenticate("github", { failureRedirect: "/" }),
   (req, res) => {
     console.log("auth/github/callback reached.");
+    res.redirect("/"); //sends user back to login screen;
+    //req.isAuthenticated() indicates status
+  }
+);
+
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/",
+  }),
+  (req, res) => {
+    console.log("auth/google/callback reached.");
     res.redirect("/"); //sends user back to login screen;
     //req.isAuthenticated() indicates status
   }
