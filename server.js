@@ -6,6 +6,7 @@
 import passport from "passport";
 import passportGithub from "passport-github";
 import passportLocal from "passport-local";
+import passportGoogle from "passport-google-oauth2"
 import session from "express-session";
 import regeneratorRuntime from "regenerator-runtime";
 import path from "path";
@@ -17,6 +18,7 @@ const DEPLOY_URL = "http://localhost:8081";
 const PORT = process.env.HTTP_PORT || LOCAL_PORT;
 const GithubStrategy = passportGithub.Strategy;
 const LocalStrategy = passportLocal.Strategy;
+const GoogleStrategy = passportGoogle.Strategy;
 const app = express();
 
 //////////////////////////////////////////////////////////////////////////
