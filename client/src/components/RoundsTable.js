@@ -65,20 +65,6 @@ class RoundsTable extends React.Component {
                 : this.props.rounds[r].seconds) +
               ")"}
           </td>
-          <td>
-            <button
-              onClick={this.props.menuOpen ? null : () => this.editRound(r)}
-            >
-              <span className="fa fa-eye"></span>
-            </button>
-          </td>
-          <td>
-            <button
-              onClick={this.props.menuOpen ? null : () => this.confirmDelete(r)}
-            >
-              <span className="fa fa-trash"></span>
-            </button>
-          </td>
         </tr>
       );
     }
@@ -95,18 +81,18 @@ class RoundsTable extends React.Component {
         <table className="table table-hover">
           <thead className="thead-light">
             <tr>
-              <th>Date</th>
-              <th>Course</th>
-              <th>Score</th>
-              <th>View/Edit...</th>
-              <th>Delete</th>
+              <th>Team Name</th>
+              <th>Match Up</th>
+              <th>History</th>
+              <th>League</th>
+              <th>Record</th>
             </tr>
           </thead>
           <tbody>
             {Object.keys(this.props.rounds).length === 0 ? (
               <tr>
                 <td colSpan="5" style={{ fontStyle: "italic" }}>
-                  No rounds logged
+                  No Data to show
                 </td>
               </tr>
             ) : (
