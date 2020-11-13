@@ -359,7 +359,7 @@ class CreateEditAccountDialog extends React.Component {
                 className="form-control form-text form-center"
                 name="teamName"
                 type="text"
-                placeholder="Answer"
+                placeholder="Team Name"
                 size="35"
                 required={true}
                 value={this.state.teamName}

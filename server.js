@@ -90,7 +90,8 @@ const userSchema = new Schema({
   authStrategy: String, //strategy used to authenticate, e.g., github, local
   profilePicURL: String, //link to profile image
   securityQuestion: String,
-  phone: String,
+  phoneNumber: String,
+  teamName: String,
   securityAnswer: {
     type: String,
     required: function () {
@@ -384,14 +385,16 @@ app.post("/users/:userId", async (req, res, next) => {
     !req.body.hasOwnProperty("displayName") ||
     !req.body.hasOwnProperty("profilePicURL") ||
     !req.body.hasOwnProperty("securityQuestion") ||
-    !req.body.hasOwnProperty("securityAnswer")
+    !req.body.hasOwnProperty("securityAnswer") ||
+    !req.body.hasOwnProperty("phoneNumber") ||
+    !req.body.hasOwnProperty("teamName") 
   ) {
     //Body does not contain correct properties
     return res
       .status(400)
       .send(
         "/users POST request formulated incorrectly. " +
-          "It must contain 'password','displayName','profilePicURL','securityQuestion' and 'securityAnswer fields in message body."
+          "It must contain 'password','displayName','profilePicURL','securityQuestion', 'securityAnswer', 'phoneNumber', and 'teamName' fields in message body."
       );
   }
   try {
@@ -413,6 +416,8 @@ app.post("/users/:userId", async (req, res, next) => {
         profilePicURL: req.body.profilePicURL,
         securityQuestion: req.body.securityQuestion,
         securityAnswer: req.body.securityAnswer,
+        phoneNumber: req.body.phoneNumber,
+        teamName: req.body.teamName,
         games: [],
       }).save();
       return res
@@ -453,6 +458,8 @@ app.put("/users/:userId", async (req, res, next) => {
     "profilePicURL",
     "securityQuestion",
     "securityAnswer",
+    "phoneNumber",
+    "teamName",
   ];
   for (const bodyProp in req.body) {
     if (!validProps.includes(bodyProp)) {
@@ -461,7 +468,7 @@ app.put("/users/:userId", async (req, res, next) => {
         .send(
           "users/ PUT request formulated incorrectly." +
             "Only the following props are allowed in body: " +
-            "'password', 'displayname', 'profilePicURL', 'securityQuestion', 'securityAnswer'"
+            "'password', 'displayname', 'profilePicURL', 'securityQuestion', 'securityAnswer', 'phoneNumber', 'teamName'"
         );
     }
   }
