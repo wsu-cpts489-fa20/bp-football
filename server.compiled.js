@@ -28,7 +28,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-require('dotenv').config();
+require("dotenv").config();
 
 var LOCAL_PORT = 8081;
 var DEPLOY_URL = "http://localhost:8081";
@@ -53,47 +53,54 @@ _mongoose["default"].connect(connectStr, {
 });
 
 var Schema = _mongoose["default"].Schema;
-var roundSchema = new Schema({
-  date: {
-    type: Date,
-    required: true
+/* const roundSchema = new Schema({
+  date: {type: Date, required: true},
+  course: {type: String, required: true},
+  type: {type: String, required: true, enum: ['practice','tournament']},
+  holes: {type: Number, required: true, min: 1, max: 18},
+  strokes: {type: Number, required: true, min: 1, max: 300},
+  minutes: {type: Number, required: true, min: 1, max: 240},
+  seconds: {type: Number, required: true, min: 0, max: 60},
+  notes: {type: String, required: true}
+},
+{
+  toObject: {
+  virtuals: true
   },
-  course: {
+  toJSON: {
+  virtuals: true 
+  }
+}); */
+//ToDo: make sure collection is updated with proper values.
+
+var gameSchema = new Schema({
+  week: {
     type: String,
     required: true
   },
-  type: {
-    type: String,
-    required: true,
-    "enum": ['practice', 'tournament']
-  },
-  holes: {
-    type: Number,
-    required: true,
-    min: 1,
-    max: 18
-  },
-  strokes: {
-    type: Number,
-    required: true,
-    min: 1,
-    max: 300
-  },
-  minutes: {
-    type: Number,
-    required: true,
-    min: 1,
-    max: 240
-  },
-  seconds: {
+  score: {
     type: Number,
     required: true,
     min: 0,
-    max: 60
+    max: 300
   },
-  notes: {
-    type: String,
-    required: true
+  opponentScore: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 300
+  },
+  win: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 15
+  },
+  loss: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 15
   }
 }, {
   toObject: {
@@ -103,9 +110,10 @@ var roundSchema = new Schema({
     virtuals: true
   }
 });
-roundSchema.virtual('SGS').get(function () {
-  return this.strokes * 60 + this.minutes * 60 + this.seconds;
-}); //Define schema that maps to a document in the Users collection in the appdb
+/* roundSchema.virtual('SGS').get(function() {
+  return (this.strokes * 60) + (this.minutes * 60) + this.seconds;
+}); */
+//Define schema that maps to a document in the Users collection in the appdb
 //database.
 
 var userSchema = new Schema({
@@ -119,13 +127,14 @@ var userSchema = new Schema({
   profilePicURL: String,
   //link to profile image
   securityQuestion: String,
+  phone: String,
   securityAnswer: {
     type: String,
     required: function required() {
       return this.securityQuestion ? true : false;
     }
   },
-  rounds: [roundSchema]
+  games: [gameSchema]
 });
 
 var User = _mongoose["default"].model("User", userSchema); //////////////////////////////////////////////////////////////////////////
@@ -151,7 +160,7 @@ function () {
           case 0:
             console.log("User authenticated through GitHub! In passport callback."); //Our convention is to build userId from displayName and provider
 
-            userId = "".concat(profile.username, "@").concat(profile.provider); //See if document with this unique userId exists in database 
+            userId = "".concat(profile.username, "@").concat(profile.provider); //See if document with this unique userId exists in database
 
             _context.next = 4;
             return User.findOne({
@@ -198,7 +207,7 @@ _passport["default"].use(new LocalStrategy({
   passReqToCallback: true
 },
 /*#__PURE__*/
-//Called when user is attempting to log in with local username and password. 
+//Called when user is attempting to log in with local username and password.
 //userId contains the email address entered into the form and password
 //contains the password entered into the form.
 function () {
@@ -313,7 +322,7 @@ _passport["default"].deserializeUser( /*#__PURE__*/function () {
   };
 }()); //////////////////////////////////////////////////////////////////////////
 //INITIALIZE EXPRESS APP
-// The following code uses express.static to serve the React app defined 
+// The following code uses express.static to serve the React app defined
 //in the client/ directory at PORT. It also writes an express session
 //to a cookie, and initializes a passport object to support OAuth.
 /////////////////////////////////////////////////////////////////////////
@@ -327,7 +336,7 @@ app.use((0, _expressSession["default"])({
     maxAge: 1000 * 60
   }
 })).use(_express["default"]["static"](_path["default"].join(__dirname, "client/build"))).use(_passport["default"].initialize()).use(_passport["default"].session()).use(_express["default"].json({
-  limit: '20mb'
+  limit: "20mb"
 })).listen(PORT, function () {
   return console.log("Listening on ".concat(PORT));
 }); //////////////////////////////////////////////////////////////////////////
@@ -337,30 +346,30 @@ app.use((0, _expressSession["default"])({
 //AUTHENTICATION ROUTES
 /////////////////////////
 //AUTHENTICATE route: Uses passport to authenticate with GitHub.
-//Should be accessed when user clicks on 'Login with GitHub' button on 
+//Should be accessed when user clicks on 'Login with GitHub' button on
 //Log In page.
 
-app.get('/auth/github', _passport["default"].authenticate('github')); //CALLBACK route:  GitHub will call this route after the
+app.get("/auth/github", _passport["default"].authenticate("github")); //CALLBACK route:  GitHub will call this route after the
 //OAuth authentication process is complete.
 //req.isAuthenticated() tells us whether authentication was successful.
 
-app.get('/auth/github/callback', _passport["default"].authenticate('github', {
-  failureRedirect: '/'
+app.get("/auth/github/callback", _passport["default"].authenticate("github", {
+  failureRedirect: "/"
 }), function (req, res) {
   console.log("auth/github/callback reached.");
-  res.redirect('/'); //sends user back to login screen; 
+  res.redirect("/"); //sends user back to login screen;
   //req.isAuthenticated() indicates status
 }); //LOGOUT route: Use passport's req.logout() method to log the user out and
 //redirect the user to the main app page. req.isAuthenticated() is toggled to false.
 
-app.get('/auth/logout', function (req, res) {
-  console.log('/auth/logout reached. Logging out');
+app.get("/auth/logout", function (req, res) {
+  console.log("/auth/logout reached. Logging out");
   req.logout();
-  res.redirect('/');
+  res.redirect("/");
 }); //TEST route: Tests whether user was successfully authenticated.
 //Should be called from the React.js client to set up app state.
 
-app.get('/auth/test', function (req, res) {
+app.get("/auth/test", function (req, res) {
   console.log("auth/test reached.");
   var isAuth = req.isAuthenticated();
 
@@ -379,7 +388,7 @@ app.get('/auth/test', function (req, res) {
   });
 }); //LOGIN route: Attempts to log in user using local strategy
 
-app.post('/auth/login', _passport["default"].authenticate('local', {
+app.post("/auth/login", _passport["default"].authenticate("local", {
   failWithError: true
 }), function (req, res) {
   console.log("/login route reached: successful authentication."); //Redirect to app's main page; the /auth/test route should return true
@@ -400,7 +409,7 @@ app.post('/auth/login', _passport["default"].authenticate('local', {
 ////////////////////////////////
 //READ user route: Retrieves the user with the specified userId from users collection (GET)
 
-app.get('/users/:userId', /*#__PURE__*/function () {
+app.get("/users/:userId", /*#__PURE__*/function () {
   var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee4(req, res, next) {
     var thisUser;
     return _regeneratorRuntime["default"].wrap(function _callee4$(_context4) {
@@ -450,7 +459,7 @@ app.get('/users/:userId', /*#__PURE__*/function () {
   };
 }()); //CREATE user route: Adds a new user account to the users collection (POST)
 
-app.post('/users/:userId', /*#__PURE__*/function () {
+app.post("/users/:userId", /*#__PURE__*/function () {
   var _ref5 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee5(req, res, next) {
     var thisUser;
     return _regeneratorRuntime["default"].wrap(function _callee5$(_context5) {
@@ -492,7 +501,7 @@ app.post('/users/:userId', /*#__PURE__*/function () {
               id: req.params.userId,
               password: req.body.password,
               displayName: req.body.displayName,
-              authStrategy: 'local',
+              authStrategy: "local",
               profilePicURL: req.body.profilePicURL,
               securityQuestion: req.body.securityQuestion,
               securityAnswer: req.body.securityAnswer,
@@ -525,7 +534,7 @@ app.post('/users/:userId', /*#__PURE__*/function () {
   };
 }()); //UPDATE user route: Updates a new user account in the users collection (POST)
 
-app.put('/users/:userId', /*#__PURE__*/function () {
+app.put("/users/:userId", /*#__PURE__*/function () {
   var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee6(req, res, next) {
     var validProps, bodyProp, status;
     return _regeneratorRuntime["default"].wrap(function _callee6$(_context6) {
@@ -542,7 +551,7 @@ app.put('/users/:userId', /*#__PURE__*/function () {
             return _context6.abrupt("return", res.status(400).send("users/ PUT request formulated incorrectly." + "It must contain 'userId' as parameter."));
 
           case 3:
-            validProps = ['password', 'displayName', 'profilePicURL', 'securityQuestion', 'securityAnswer'];
+            validProps = ["password", "displayName", "profilePicURL", "securityQuestion", "securityAnswer"];
             _context6.t0 = _regeneratorRuntime["default"].keys(req.body);
 
           case 5:
@@ -604,7 +613,7 @@ app.put('/users/:userId', /*#__PURE__*/function () {
   };
 }()); //DELETE user route: Deletes the document with the specified userId from users collection (DELETE)
 
-app["delete"]('/users/:userId', /*#__PURE__*/function () {
+app["delete"]("/users/:userId", /*#__PURE__*/function () {
   var _ref7 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee7(req, res, next) {
     var status;
     return _regeneratorRuntime["default"].wrap(function _callee7$(_context7) {
@@ -655,10 +664,10 @@ app["delete"]('/users/:userId', /*#__PURE__*/function () {
 }()); /////////////////////////////////
 //ROUNDS ROUTES
 ////////////////////////////////
-//CREATE round route: Adds a new round as a subdocument to 
+//CREATE round route: Adds a new round as a subdocument to
 //a document in the users collection (POST)
 
-app.post('/rounds/:userId', /*#__PURE__*/function () {
+app.post("/rounds/:userId", /*#__PURE__*/function () {
   var _ref8 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee8(req, res, next) {
     var status;
     return _regeneratorRuntime["default"].wrap(function _callee8$(_context8) {
@@ -715,10 +724,10 @@ app.post('/rounds/:userId', /*#__PURE__*/function () {
   return function (_x23, _x24, _x25) {
     return _ref8.apply(this, arguments);
   };
-}()); //READ round route: Returns all rounds associated 
+}()); //READ round route: Returns all rounds associated
 //with a given user in the users collection (GET)
 
-app.get('/rounds/:userId', /*#__PURE__*/function () {
+app.get("/rounds/:userId", /*#__PURE__*/function () {
   var _ref9 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee9(req, res) {
     var thisUser;
     return _regeneratorRuntime["default"].wrap(function _callee9$(_context9) {
@@ -766,10 +775,10 @@ app.get('/rounds/:userId', /*#__PURE__*/function () {
   return function (_x26, _x27) {
     return _ref9.apply(this, arguments);
   };
-}()); //UPDATE round route: Updates a specific round 
+}()); //UPDATE round route: Updates a specific round
 //for a given user in the users collection (PUT)
 
-app.put('/rounds/:userId/:roundId', /*#__PURE__*/function () {
+app.put("/rounds/:userId/:roundId", /*#__PURE__*/function () {
   var _ref10 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee10(req, res, next) {
     var validProps, bodyObj, bodyProp, status;
     return _regeneratorRuntime["default"].wrap(function _callee10$(_context10) {
@@ -777,7 +786,7 @@ app.put('/rounds/:userId/:roundId', /*#__PURE__*/function () {
         switch (_context10.prev = _context10.next) {
           case 0:
             console.log("in /rounds (PUT) route with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
-            validProps = ['date', 'course', 'type', 'holes', 'strokes', 'minutes', 'seconds', 'notes'];
+            validProps = ["date", "course", "type", "holes", "strokes", "minutes", "seconds", "notes"];
             bodyObj = _objectSpread({}, req.body);
             delete bodyObj._id; //Not needed for update
 
@@ -812,10 +821,10 @@ app.put('/rounds/:userId/:roundId', /*#__PURE__*/function () {
             _context10.prev = 16;
             _context10.next = 19;
             return User.updateOne({
-              "id": req.params.userId,
+              id: req.params.userId,
               "rounds._id": _mongoose["default"].Types.ObjectId(req.params.roundId)
             }, {
-              "$set": bodyObj
+              $set: bodyObj
             });
 
           case 19:
@@ -847,10 +856,10 @@ app.put('/rounds/:userId/:roundId', /*#__PURE__*/function () {
   return function (_x28, _x29, _x30) {
     return _ref10.apply(this, arguments);
   };
-}()); //DELETE round route: Deletes a specific round 
+}()); //DELETE round route: Deletes a specific round
 //for a given user in the users collection (DELETE)
 
-app["delete"]('/rounds/:userId/:roundId', /*#__PURE__*/function () {
+app["delete"]("/rounds/:userId/:roundId", /*#__PURE__*/function () {
   var _ref11 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee11(req, res, next) {
     var status;
     return _regeneratorRuntime["default"].wrap(function _callee11$(_context11) {
