@@ -134,7 +134,7 @@ var userSchema = new Schema({
       return this.securityQuestion ? true : false;
     }
   },
-  rounds: [gameSchema]
+  games: [gameSchema]
 });
 
 var User = _mongoose["default"].model("User", userSchema); //////////////////////////////////////////////////////////////////////////
