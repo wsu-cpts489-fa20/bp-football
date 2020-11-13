@@ -18,6 +18,8 @@ class CreateEditAccountDialog extends React.Component {
                       passwordRepeat: "",
                       securityQuestion: "",
                       securityAnswer: "",
+                      phoneNumber: "",
+                      teamName: "",
                       formUpdated: false,
                       confirmDelete: false};
     } 
@@ -39,7 +41,9 @@ class CreateEditAccountDialog extends React.Component {
                            password: userData.password,
                            passwordRepeat: userData.password,
                            securityQuestion: userData.securityQuestion,
-                           securityAnswer: userData.securityAnswer});
+                           securityAnswer: userData.securityAnswer,
+                           phoneNumber: userData.phoneNumber,
+                           teamName: userData.teamName});
         }
     }
 
@@ -110,6 +114,12 @@ class CreateEditAccountDialog extends React.Component {
         if (updateField != "securityAnswer" &&
             this.state.securityAnswer !== this.origAccountInfo.securityAnswer)
             {return true;}
+        if (updateField != "phoneNumber" &&
+            this.state.phoneNumber !== this.origAccountInfo.phoneNumber)
+            {return true;}
+        if (updateField != "teamName" &&
+            this.state.teamName !== this.origAccountInfo.teamName)
+            {return true;}
         return false;
     }
 
@@ -136,7 +146,9 @@ class CreateEditAccountDialog extends React.Component {
             password: this.state.password,
             profilePicURL: this.state.profilePicURL,
             securityQuestion: this.state.securityQuestion,
-            securityAnswer: this.state.securityAnswer
+            securityAnswer: this.state.securityAnswer,
+            phoneNumber: this.state.phoneNumber,
+            teamName: this.state.teamName
         };
         const url = '/users/' + this.state.accountName;
         let res;
@@ -327,6 +339,35 @@ class CreateEditAccountDialog extends React.Component {
                 />
             </label>
             <br/>
+            <label>
+                Phone Number:
+                <input
+                className="form-control form-text form-center"
+                name="phoneNumber"
+                type="text"
+                size="35"
+                placeholder="Phone Number"
+                required={true}
+                value={this.state.phoneNumber}
+                onChange={this.handleChange}
+                />
+            </label>
+            <br/>
+            <label>
+                Team Name:
+                <input
+                className="form-control form-text form-center"
+                name="teamName"
+                type="text"
+                placeholder="Answer"
+                size="35"
+                required={true}
+                value={this.state.teamName}
+                onChange={this.handleChange}
+                />
+            </label>
+            <br/>
+
             {!this.props.create ?  
             <button className="btn btn-small btn-danger" onClick={this.confirmDeleteAccount}>
                 Delete Account...
