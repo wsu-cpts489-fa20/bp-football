@@ -22,6 +22,8 @@ constructor() {
                   showResetPaswordDialog: false,
                   githubIcon: "fa fa-github",
                   githubLabel: "Sign in with GitHub",
+                  googleIcon: "fa fa-google",
+                  googleLabel: "Sign in with Google",
                   loginMsg: "",
                   newAccountCreated: false
                   };
@@ -214,9 +216,11 @@ cancelCreateAccount = () => {
               <span className={this.state.githubIcon}></span>&nbsp;
                 {this.state.githubLabel}
             </button>
-            <p>
-                <i>Version CptS 489</i>
-            </p>
+            <button type="button" className="btn btn-google"
+                onClick={() => this.handleOAuthLoginClick("google")}>
+                    <span className={this.state.googleIcon}></span>&nbsp;
+                    {this.state.googleLabel}
+            </button>
             </form>
             {this.state.showCreateAccountDialog ? 
               <CreateEditAccountDialog

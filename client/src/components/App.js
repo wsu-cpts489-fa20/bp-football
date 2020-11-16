@@ -11,7 +11,7 @@ import CoursesPage from './CoursesPage.js';
 import AboutBox from './AboutBox.js';
 
 const modeTitle = {};
-modeTitle[AppMode.LOGIN] = "Welcome to SpeedScore";
+modeTitle[AppMode.LOGIN] = "Welcome to Fantasy Football";
 modeTitle[AppMode.FEED] = "Activity Feed";
 modeTitle[AppMode.ROUNDS] = "My Rounds";
 modeTitle[AppMode.ROUNDS_LOGROUND] = "Log New Round";
