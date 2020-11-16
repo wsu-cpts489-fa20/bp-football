@@ -1,14 +1,17 @@
 import React from "react";
 //ToDo: change course to display league members instead
-// THis now becomes "Leage" instead of Courses
-class CoursesPage extends React.Component {
+class DraftPage extends React.Component {
   render() {
     return (
-      // Table[player |  record | account name]
-      // ** ToDo: if a manager has 0 players, bring up a prompt to join a league
+      //ToDo
+      // Parse .csv and populate a table of all available players.
+      // Use professor's add round implementation for guidance
+      // Create a form for: league name, some basic league settings, upload file button
+      // Upon submit, make that user a commissioner in the db
+      // Update user in database with players
       <div className="padded-page">
         <center>
-          <h1>Courses</h1>
+          <h1>Draft</h1>
           <h2>This page is under construction.</h2>
           <img
             src="https://dl.dropboxusercontent.com/s/qpjhy9x9gwdxpob/SpeedScoreLogo64Trans.png"
@@ -22,4 +25,4 @@ class CoursesPage extends React.Component {
   }
 }
 
-export default CoursesPage;
+export default DraftPage;
