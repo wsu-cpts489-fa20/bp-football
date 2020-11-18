@@ -62,8 +62,14 @@ const Schema = mongoose.Schema;
 
 // Add a league schema
 const leagueSchema = new Schema({
-  userIds: {},
-  leagueId: {},
+  leagueName: { type: String, required: true },
+  userIds: [userSchema],
+  leagueId: { type: String, required: true },
+});
+
+const playerSchema = new Schema({
+  position: String,
+  name: String,
 });
 
 //ToDo: update default values for the rest of the database entries (i.e. commissioner, )
@@ -74,7 +80,6 @@ const gameSchema = new Schema(
     score: { type: Number, required: true, min: 0, max: 300 },
     opponentScore: { type: Number, required: true, min: 0, max: 300 },
     win: { type: Boolean },
-    commissioner: { type: Boolean, required: true },
     managerId: {},
     leagueId: {},
     players: {},
@@ -104,6 +109,7 @@ const userSchema = new Schema({
   securityQuestion: String,
   phoneNumber: String,
   teamName: String,
+  commissioner: { type: Boolean, required: true },
   win: { type: Number, required: true, min: 0, max: 15 },
   loss: { type: Number, required: true, min: 0, max: 15 },
   securityAnswer: {
