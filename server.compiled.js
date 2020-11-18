@@ -74,7 +74,23 @@ var Schema = _mongoose["default"].Schema;
   virtuals: true 
   }
 }); */
-//ToDo: make sure collection is updated with proper values.
+// Add a league schema
+
+var leagueSchema = new Schema({
+  leagueName: {
+    type: String,
+    required: true
+  },
+  userIds: {},
+  leagueId: {
+    type: String,
+    required: true
+  }
+});
+var playerSchema = new Schema({
+  position: String,
+  name: String
+}); //ToDo: update default values for the rest of the database entries (i.e. commissioner, )
 
 var gameSchema = new Schema({
   week: {
@@ -94,17 +110,11 @@ var gameSchema = new Schema({
     max: 300
   },
   win: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 15
+    type: Boolean
   },
-  loss: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 15
-  }
+  managerId: {},
+  leagueId: {},
+  players: {}
 }, {
   toObject: {
     virtuals: true
@@ -132,6 +142,22 @@ var userSchema = new Schema({
   securityQuestion: String,
   phoneNumber: String,
   teamName: String,
+  commissioner: {
+    type: Boolean,
+    required: true
+  },
+  win: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 15
+  },
+  loss: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 15
+  },
   securityAnswer: {
     type: String,
     required: function required() {
@@ -326,7 +352,7 @@ function () {
           case 0:
             console.log("User authenticated through Google! In passport callback."); //Our convention is to build userId from displayName and provider
 
-            userId = "".concat(profile.sub, "@").concat(profile.provider); //See if document with this unique userId exists in database 
+            userId = "".concat(profile.sub, "@").concat(profile.provider); //See if document with this unique userId exists in database
 
             _context3.next = 4;
             return User.findOne({
