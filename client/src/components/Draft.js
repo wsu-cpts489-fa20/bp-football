@@ -1,24 +1,58 @@
 import React from "react";
-//ToDo: change course to display league members instead
+import CSVReader from "react-csv-reader";
 class DraftPage extends React.Component {
+  parseOptions = () => {
+    console.log("parsed");
+    //parse it
+  };
+
   render() {
     return (
       //ToDo
       // Parse .csv and populate a table of all available players.
-      // Use professor's add round implementation for guidance
       // Create a form for: league name, some basic league settings, upload file button
       // Upon submit, make that user a commissioner in the db
       // Update user in database with players
       <div className="padded-page">
+        <button className="modal-close" onClick={this.props.close}>
+          &times;
+        </button>
         <center>
-          <h1>Draft</h1>
-          <h2>This page is under construction.</h2>
-          <img
-            src="https://dl.dropboxusercontent.com/s/qpjhy9x9gwdxpob/SpeedScoreLogo64Trans.png"
-            height="200"
-            width="200"
-          />
-          <p style={{ fontStyle: "italic" }}>Version CptS 489 React Demo</p>
+          <form className="padded-page" onSubmit={this.handleSubmit}>
+            <center>
+              <label>
+                League Name:
+                <input
+                  name="leagueName"
+                  className="form-control form-center"
+                  type="text"
+                  onChange={this.handleChange}
+                  placeholder="League Name"
+                  size="50"
+                  maxLength="50"
+                />
+              </label>
+              <p></p>
+              <label>
+                Format:
+                <select
+                  name="format"
+                  className="form-control form-center"
+                  onChange={this.handleChange}
+                >
+                  <option value="full">Full PPR</option>
+                  <option value="half">Half PPR</option>
+                </select>
+              </label>
+              <p></p>
+              <CSVReader onFileLoaded={this.parseOptions} label="upload team" />
+              <button
+                type="submit"
+                style={{ width: "70%", fontSize: "36px" }}
+                className="btn btn-primary btn-color-theme"
+              ></button>
+            </center>
+          </form>
         </center>
       </div>
     );

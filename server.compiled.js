@@ -142,19 +142,14 @@ var userSchema = new Schema({
   securityQuestion: String,
   phoneNumber: String,
   teamName: String,
-  commissioner: {
-    type: Boolean,
-    required: true
-  },
+  commissioner: Boolean,
   win: {
     type: Number,
-    required: true,
     min: 0,
     max: 15
   },
   loss: {
     type: Number,
-    required: true,
     min: 0,
     max: 15
   },
