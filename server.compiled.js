@@ -114,7 +114,7 @@ var gameSchema = new Schema({
   },
   managerId: {},
   leagueId: {},
-  players: {}
+  players: [playerSchema]
 }, {
   toObject: {
     virtuals: true
@@ -1019,3 +1019,63 @@ app.put("/games/:userId/:gameId", /*#__PURE__*/function () {
       );
   }
 }); */
+//a document in the users collection (POST)
+
+app.post("/players/:userId", /*#__PURE__*/function () {
+  var _ref12 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee12(req, res, next) {
+    var status;
+    return _regeneratorRuntime["default"].wrap(function _callee12$(_context12) {
+      while (1) {
+        switch (_context12.prev = _context12.next) {
+          case 0:
+            console.log("in /players (POST) route with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
+
+            if (req.body.hasOwnProperty("players")) {
+              _context12.next = 3;
+              break;
+            }
+
+            return _context12.abrupt("return", res.status(400).send("POST request on /games formulated incorrectly." + "Body must contain the required fields: players."));
+
+          case 3:
+            _context12.prev = 3;
+            _context12.next = 6;
+            return User.updateOne({
+              id: req.params.userId
+            }, {
+              $push: {
+                players: req.body
+              }
+            });
+
+          case 6:
+            status = _context12.sent;
+
+            if (status.nModified != 1) {
+              //Should never happen!
+              res.status(400).send("Unexpected error occurred when adding players to" + " database. Game was not added.");
+            } else {
+              res.status(200).send("Players successfully added to database.");
+            }
+
+            _context12.next = 14;
+            break;
+
+          case 10:
+            _context12.prev = 10;
+            _context12.t0 = _context12["catch"](3);
+            console.log(_context12.t0);
+            return _context12.abrupt("return", res.status(400).send("Unexpected error occurred when adding players" + " to database: " + _context12.t0));
+
+          case 14:
+          case "end":
+            return _context12.stop();
+        }
+      }
+    }, _callee12, null, [[3, 10]]);
+  }));
+
+  return function (_x35, _x36, _x37) {
+    return _ref12.apply(this, arguments);
+  };
+}());

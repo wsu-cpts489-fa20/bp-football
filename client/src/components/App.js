@@ -140,7 +140,7 @@ class App extends React.Component {
         {this.state.showAboutDialog ? (
           <AboutBox close={() => this.setState({ showAboutDialog: false })} />
         ) : null}
-        {this.state.showDraftDialog ? <Draft close={this.closeDraft} /> : null}
+        {this.state.showDraftDialog ? <Draft close={this.closeDraft} userObj={this.state.userObj}  /> : null}
         {this.state.statusMsg != "" ? (
           <div className="status-msg">
             <span>{this.state.statusMsg}</span>

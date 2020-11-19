@@ -82,7 +82,7 @@ const gameSchema = new Schema(
     win: { type: Boolean },
     managerId: {},
     leagueId: {},
-    players: {},
+    players: [playerSchema],
   },
   {
     toObject: {
@@ -759,3 +759,48 @@ app.put("/games/:userId/:gameId", async (req, res, next) => {
       );
   }
 }); */
+
+//a document in the users collection (POST)
+app.post("/players/:userId", async (req, res, next) => {
+  console.log(
+    "in /players (POST) route with params = " +
+      JSON.stringify(req.params) +
+      " and body = " +
+      JSON.stringify(req.body)
+  );
+  if (
+    !req.body.hasOwnProperty("players") 
+  ) {
+    //Body does not contain correct properties
+    return res
+      .status(400)
+      .send(
+        "POST request on /games formulated incorrectly." +
+          "Body must contain the required fields: players."
+      );
+  }
+  try {
+    let status = await User.updateOne(
+      { id: req.params.userId },
+      { $push: { players: req.body } }
+    );
+    if (status.nModified != 1) {
+      //Should never happen!
+      res
+        .status(400)
+        .send(
+          "Unexpected error occurred when adding players to" +
+            " database. Game was not added."
+        );
+    } else {
+      res.status(200).send("Players successfully added to database.");
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when adding players" + " to database: " + err
+      );
+  }
+});

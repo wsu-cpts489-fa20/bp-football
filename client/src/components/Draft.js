@@ -1,10 +1,42 @@
 import React from "react";
 import CSVReader from "react-csv-reader";
 class DraftPage extends React.Component {
-  parseOptions = () => {
-    console.log("parsed");
+  constructor(props) {
+    super(props);
+    this.parsedata = [];
+    this.fileInfo = [];
+    this.state = {
+            players: []
+    };
+  }
+
+  parseOptions = (data, info) => {
+    console.log(data);
+    console.log(info);
+    this.parsedata = data;
+    this.fileInfo = info;
     //parse it
   };
+
+  addPlayers = async (newData) => {
+    const url = '/players/' + this.props.userObj.id;
+    const res = await fetch(url, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+        method: 'POST',
+        body: JSON.stringify(newData)}); 
+    const msg = await res.text();
+    if (res.status != 200) {
+        this.setState({errorMsg: msg});
+        // this.props.changeMode(AppMode.ROUNDS);
+    } else {
+        this.setState({errorMsg: ""});
+        // this.props.refreshOnUpdate(AppMode.ROUNDS);
+    }
+}
+
 
   render() {
     return (
@@ -45,9 +77,19 @@ class DraftPage extends React.Component {
                 </select>
               </label>
               <p></p>
-              <CSVReader onFileLoaded={this.parseOptions} label="upload team" />
+              {/* <CSVReader onFileLoaded={this.parseOptions} label="upload team" /> */}
+              {/* <CSVReader onFileLoaded={(data, fileInfo) => console.dir(data, fileInfo)} /> */}
+              <CSVReader
+                // cssClass="csv-reader-input"
+                // label="Select CSV with secret Death Star statistics"
+                // onFileLoaded={(this.state.parsedata, this.state.fileInfo) => console.dir(this.state.parsedata, this.state.fileInfo)}                onError={this.handleDarkSideForce}
+                // parserOptions={this.parseOptions}
+                onFileLoaded={(data, fileInfo) => this.parseOptions(data, fileInfo)}
+                // inputId="ObiWan"
+                // inputStyle={{color: 'red'}}
+              />              
               <button
-                type="submit"
+                type="submit" onClick={this.addPlayers(this.data)}
                 style={{ width: "70%", fontSize: "36px" }}
                 className="btn btn-primary btn-color-theme"
               ></button>
