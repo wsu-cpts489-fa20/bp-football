@@ -7,7 +7,7 @@ class DraftPage extends React.Component {
     this.fileInfo = [];
     this.leagueName = "";
     this.state = {
-            players: []
+            playersData: []
     };
   }
 
@@ -15,28 +15,26 @@ class DraftPage extends React.Component {
     console.log(data);
     console.log(info);
     this.parsedata = data;
+
+    this.setState({playersData: data});
+
     this.fileInfo = info;
-    //parse it
   };
 
   addPlayers = async (newData) => {
-    const url = '/players/' + this.props.userObj.id;
+    const url = '/games/addplayers/' + this.props.userObj.id;
     const res = await fetch(url, {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            },
         method: 'POST',
         body: JSON.stringify(newData)}); 
     const msg = await res.text();
     if (res.status != 200) {
         this.setState({errorMsg: msg});
-        // this.props.changeMode(AppMode.ROUNDS);
+        //this.props.changeMode(AppMode.ROUNDS);
     } else {
         this.setState({errorMsg: ""});
-        // this.props.refreshOnUpdate(AppMode.ROUNDS);
+        //this.props.refreshOnUpdate(AppMode.ROUNDS);
     }
-}
+  }
 
 
   render() {
@@ -85,7 +83,7 @@ class DraftPage extends React.Component {
               <br></br>           
               <button
                 type="submit" 
-                // onClick={this.addPlayers(this.data)}
+                onClick={this.addPlayers(this.state.playersData)}
                 // style={{ width: "70%", fontSize: "36px" }}
                 className="btn-color-theme btn btn-primary btn-block login-btn">
                 <span id="draft-btn-icon"/>
