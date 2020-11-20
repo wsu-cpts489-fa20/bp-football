@@ -14,18 +14,16 @@ class CoursesPage extends React.Component {
 
   render() {
     return (
-      // ** ToDo: if a manager has 0 players, bring up a prompt to join a league
       <div className="padded-page">
         <center>
           <h1>League Page</h1>
-          <h2>Put League Name here</h2>
+          <h2>{this.props.userObj.league.LeagueName}</h2>
         </center>
         <CoursesTable
           league={this.props.userObj.league}
           changeMode={this.props.changeMode}
           menuOpen={this.props.menuOpen} />
       </div>
-
     );
   }
 }

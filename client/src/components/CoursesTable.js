@@ -23,6 +23,7 @@ class CoursesTable extends React.Component {
   };
 
   //populates the table with headers and data from rendertable
+  //if not in league will prompt to join one
   render() {
     return (
       <div className="padded-page">
