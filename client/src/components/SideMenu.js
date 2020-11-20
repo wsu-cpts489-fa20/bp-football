@@ -75,10 +75,11 @@ class SideMenu extends React.Component {
             <span className="fa fa-user"></span>&nbsp;Account
           </a>
         ) : null}
-        <a 
+        <a
           id="draftBtn"
           className="sidemenu-item"
-          onClick={()=>this.props.changeMode(AppMode.DRAFT)}>
+          onClick={() => this.props.changeMode(AppMode.DRAFT)}
+        >
           <span></span>&nbsp;Import Draft
         </a>
 
@@ -92,7 +93,7 @@ class SideMenu extends React.Component {
         <a id="logOutBtn" className="sidemenu-item" onClick={this.props.logOut}>
           <span className="fa fa-sign-out-alt"></span>&nbsp;Log Out
         </a>
-        {/*Todo: if user is a commissioner, have a 'draft' option */}
+        {/*Todo: if user is a commissioner, have a 'League Setting' option? */}
       </div>
     );
   }
