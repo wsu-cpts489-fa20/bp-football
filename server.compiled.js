@@ -81,7 +81,6 @@ var leagueSchema = new Schema({
     type: String,
     required: true
   },
-  userIds: {},
   leagueId: {
     type: String,
     required: true
@@ -159,7 +158,8 @@ var userSchema = new Schema({
       return this.securityQuestion ? true : false;
     }
   },
-  games: [gameSchema]
+  games: [gameSchema],
+  league: [leagueSchema]
 });
 
 var User = _mongoose["default"].model("User", userSchema); //////////////////////////////////////////////////////////////////////////
