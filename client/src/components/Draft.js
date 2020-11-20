@@ -5,6 +5,7 @@ class DraftPage extends React.Component {
     super(props);
     this.parsedata = [];
     this.fileInfo = [];
+    this.leagueName = "";
     this.state = {
             players: []
     };
@@ -46,11 +47,11 @@ class DraftPage extends React.Component {
       // Upon submit, make that user a commissioner in the db
       // Update user in database with players
       <div className="padded-page">
-        <button className="modal-close" onClick={this.props.close}>
+        {/* <button className="modal-close" onClick={this.props.close}>
           &times;
-        </button>
-        <center>
-          <form className="padded-page" onSubmit={this.handleSubmit}>
+        </button> */}
+        {/* <center> */}
+          {/* <form className="padded-page" onSubmit={this.handleSubmit}> */}
             <center>
               <label>
                 League Name:
@@ -60,6 +61,7 @@ class DraftPage extends React.Component {
                   type="text"
                   onChange={this.handleChange}
                   placeholder="League Name"
+                  value={this.leagueName}
                   size="50"
                   maxLength="50"
                 />
@@ -77,25 +79,22 @@ class DraftPage extends React.Component {
                 </select>
               </label>
               <p></p>
-              {/* <CSVReader onFileLoaded={this.parseOptions} label="upload team" /> */}
-              {/* <CSVReader onFileLoaded={(data, fileInfo) => console.dir(data, fileInfo)} /> */}
               <CSVReader
-                // cssClass="csv-reader-input"
-                // label="Select CSV with secret Death Star statistics"
-                // onFileLoaded={(this.state.parsedata, this.state.fileInfo) => console.dir(this.state.parsedata, this.state.fileInfo)}                onError={this.handleDarkSideForce}
-                // parserOptions={this.parseOptions}
                 onFileLoaded={(data, fileInfo) => this.parseOptions(data, fileInfo)}
-                // inputId="ObiWan"
-                // inputStyle={{color: 'red'}}
-              />              
+              />   
+              <br></br>           
               <button
-                type="submit" onClick={this.addPlayers(this.data)}
-                style={{ width: "70%", fontSize: "36px" }}
-                className="btn btn-primary btn-color-theme"
-              ></button>
+                type="submit" 
+                // onClick={this.addPlayers(this.data)}
+                // style={{ width: "70%", fontSize: "36px" }}
+                className="btn-color-theme btn btn-primary btn-block login-btn">
+                <span id="draft-btn-icon"/>
+                &nbsp;Submit Team
+
+                </button>
             </center>
-          </form>
-        </center>
+          {/* </form> */}
+        {/* </center> */}
       </div>
     );
   }

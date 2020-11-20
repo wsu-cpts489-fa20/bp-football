@@ -75,8 +75,11 @@ class SideMenu extends React.Component {
             <span className="fa fa-user"></span>&nbsp;Account
           </a>
         ) : null}
-        <a onClick={this.props.openDraft}>
-          <span>Create League</span>
+        <a 
+          id="draftBtn"
+          className="sidemenu-item"
+          onClick={()=>this.props.changeMode(AppMode.DRAFT)}>
+          <span></span>&nbsp;Import Draft
         </a>
 
         <a
