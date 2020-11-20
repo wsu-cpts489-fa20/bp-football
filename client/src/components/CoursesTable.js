@@ -9,7 +9,7 @@ class CoursesTable extends React.Component {
   //populates table with league information
   renderTable = () => {
     let table = [];
-    for (let r = 0; r < this.props.users.length; ++r) {
+    for (let r = 0; r < this.props.league.length; ++r) {
       table.push(
         <tr key={r}>
           <td>{this.props.league[r].users.teamName}</td>
@@ -37,7 +37,15 @@ class CoursesTable extends React.Component {
             </tr>
           </thead>
           <tbody>
-                this.renderTable()
+            {Object.keys(this.props.league).length === 0 ? (
+              <tr>
+                <td colSpan="5" style={{ fontStyle: "italic" }}>
+                  No data to show. Not in a league
+                </td>
+              </tr>
+            ) : (
+              this.renderTable()
+            )}
           </tbody>
         </table>
       </div>
