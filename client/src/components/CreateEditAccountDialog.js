@@ -20,6 +20,7 @@ class CreateEditAccountDialog extends React.Component {
                       securityAnswer: "",
                       phoneNumber: "",
                       teamName: "",
+                      leagueID: "", //holding league id for each user
                       formUpdated: false,
                       confirmDelete: false};
     } 
@@ -43,7 +44,8 @@ class CreateEditAccountDialog extends React.Component {
                            securityQuestion: userData.securityQuestion,
                            securityAnswer: userData.securityAnswer,
                            phoneNumber: userData.phoneNumber,
-                           teamName: userData.teamName});
+                           teamName: userData.teamName,
+                           leagueID: userData.leagueID}); 
         }
     }
 
@@ -120,6 +122,9 @@ class CreateEditAccountDialog extends React.Component {
         if (updateField != "teamName" &&
             this.state.teamName !== this.origAccountInfo.teamName)
             {return true;}
+        if (updateField != "leagueID" &&
+            this.state.leagueID !== this.origAccountInfo.leagueID)
+            {return true;}
         return false;
     }
 
@@ -148,7 +153,8 @@ class CreateEditAccountDialog extends React.Component {
             securityQuestion: this.state.securityQuestion,
             securityAnswer: this.state.securityAnswer,
             phoneNumber: this.state.phoneNumber,
-            teamName: this.state.teamName
+            teamName: this.state.teamName,
+            leagueID: this.state.leagueID
         };
         const url = '/users/' + this.state.accountName;
         let res;
@@ -367,7 +373,21 @@ class CreateEditAccountDialog extends React.Component {
                 />
             </label>
             <br/>
-
+            <br/>
+            <label>
+                League ID:
+                <input
+                className="form-control form-text form-center"
+                name="leagueID"
+                type="text"
+                placeholder="Enter 0 if not yet in a league"
+                size="35"
+                required={true}
+                value={this.state.leagueID}
+                onChange={this.handleChange}
+                />
+            </label>
+            <br/>
             {!this.props.create ?  
             <button className="btn btn-small btn-danger" onClick={this.confirmDeleteAccount}>
                 Delete Account...
