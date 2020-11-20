@@ -1,8 +1,9 @@
 import React from "react";
 import CSVReader from "react-csv-reader";
 class DraftPage extends React.Component {
-  parseOptions = () => {
+  parseOptions = (data, fileInfo) => {
     console.log("parsed");
+    console.log(data);
     //parse it
   };
 
