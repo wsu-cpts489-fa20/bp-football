@@ -63,6 +63,7 @@ const Schema = mongoose.Schema;
 // Add a league schema
 const leagueSchema = new Schema({
   leagueName: { type: String, required: true },
+  //userIds: [playerSchema],
   leagueId: { type: String, required: true },
 });
 
@@ -81,7 +82,7 @@ const gameSchema = new Schema(
     win: { type: Boolean },
     managerId: {},
     leagueId: {},
-    players: {},
+    players: [playerSchema],
   },
   {
     toObject: {
@@ -93,9 +94,6 @@ const gameSchema = new Schema(
   }
 );
 
-/* roundSchema.virtual('SGS').get(function() {
-  return (this.strokes * 60) + (this.minutes * 60) + this.seconds;
-}); */
 
 //Define schema that maps to a document in the Users collection in the appdb
 //database.
@@ -614,7 +612,9 @@ app.post("/games/:userId", async (req, res, next) => {
     !req.body.hasOwnProperty("score") ||
     !req.body.hasOwnProperty("opponentScore") ||
     !req.body.hasOwnProperty("win") ||
-    !req.body.hasOwnProperty("loss")
+    !req.body.hasOwnProperty("managerId") ||
+    !req.body.hasOwnProperty("leagueId") ||
+    !req.body.hasOwnProperty("players")
   ) {
     //Body does not contain correct properties
     return res
@@ -647,6 +647,71 @@ app.post("/games/:userId", async (req, res, next) => {
       .send(
         "Unexpected error occurred when adding game" + " to database: " + err
       );
+  }
+});
+
+//CREATE Players route: Adds a new NFL players collection to the user's
+//database - POST request with all the inputs
+app.post("/games/addplayers/:userId", async (req, res, next) => {
+  console.log(
+    "in /games/players (POST) route with params = " +
+      JSON.stringify(req.params) +
+      " and body = " +
+      JSON.stringify(req.body)
+  );
+  if (
+    !req.body.hasOwnProperty("name") ||
+    !req.body.hasOwnProperty("position")
+  ) {
+    //Body does not contain correct properties
+    return res
+      .status(400)
+      .send(
+        "POST request on /games/players formulated incorrectly." +
+          "Body must contain all 2 required fields: players name and position."
+      );
+  }
+  try {
+    let status = await User.updateOne(
+      { id: req.params.userId },
+      { $push: { "games.0.players": req.body } }
+    );
+    if (status.nModified != 1) {
+      //Should never happen!
+      res
+        .status(400)
+        .send(
+          "Unexpected error occurred when adding game to" +
+            " database. Game was not added."
+        );
+    } else {
+      res.status(200).send("Players successfully added to user database.");
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when adding players" + " to database: " + err
+      );
+  }
+});
+
+//READ players route: Returns all players associated 
+//with a given user in the users collection (GET)
+app.get('/games/addplayers/:userId', async(req, res) => {
+  console.log("in /games/players route (GET) with userId = " + 
+    JSON.stringify(req.params.userId));
+  try {
+    let thisUser = await User.findOne({id: req.params.userId});
+    if (!thisUser) {
+      return res.status(400).message("No user account with specified userId was found in database.");
+    } else {
+      return res.status(200).json(JSON.stringify(thisUser.games[0].players));
+    }
+  } catch (err) {
+    console.log()
+    return res.status(400).message("Unexpected error occurred when looking up user in database: " + err);
   }
 });
 
@@ -763,3 +828,48 @@ app.put("/games/:userId/:gameId", async (req, res, next) => {
       );
   }
 }); */
+
+//a document in the users collection (POST)
+app.post("/players/:userId", async (req, res, next) => {
+  console.log(
+    "in /players (POST) route with params = " +
+      JSON.stringify(req.params) +
+      " and body = " +
+      JSON.stringify(req.body)
+  );
+  if (
+    !req.body.hasOwnProperty("players") 
+  ) {
+    //Body does not contain correct properties
+    return res
+      .status(400)
+      .send(
+        "POST request on /games formulated incorrectly." +
+          "Body must contain the required fields: players."
+      );
+  }
+  try {
+    let status = await User.updateOne(
+      { id: req.params.userId },
+      { $push: { players: req.body } }
+    );
+    if (status.nModified != 1) {
+      //Should never happen!
+      res
+        .status(400)
+        .send(
+          "Unexpected error occurred when adding players to" +
+            " database. Game was not added."
+        );
+    } else {
+      res.status(200).send("Players successfully added to database.");
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when adding players" + " to database: " + err
+      );
+  }
+});

@@ -18,7 +18,8 @@ modeTitle[AppMode.ROUNDS] = "My Game History";
 modeTitle[AppMode.ROUNDS_LOGROUND] = "Log New Game";
 //todo: remove ability to edit rounds
 modeTitle[AppMode.ROUNDS_EDITROUND] = "Edit Round";
-modeTitle[AppMode.COURSES] = "My League Members";
+modeTitle[AppMode.COURSES] = "Courses";
+modeTitle[AppMode.DRAFT] = "Draft"
 
 const modeToPage = {};
 modeToPage[AppMode.LOGIN] = LoginPage;
@@ -27,6 +28,7 @@ modeToPage[AppMode.ROUNDS] = Rounds;
 modeToPage[AppMode.ROUNDS_LOGROUND] = Rounds;
 modeToPage[AppMode.ROUNDS_EDITROUND] = Rounds;
 modeToPage[AppMode.COURSES] = CoursesPage;
+modeToPage[AppMode.DRAFT] = Draft;
 
 class App extends React.Component {
   constructor() {
@@ -138,10 +140,10 @@ class App extends React.Component {
     const ModePage = modeToPage[this.state.mode];
     return (
       <div className="padded-page">
-        {this.state.showAboutDialog ? (
+        {/* {this.state.showAboutDialog ? (
           <AboutBox close={() => this.setState({ showAboutDialog: false })} />
-        ) : null}
-        {this.state.showDraftDialog ? <Draft close={this.closeDraft} /> : null}
+        ) : null} */}
+        {this.state.showDraftDialog ? ( <Draft close={this.closeDraft} userObj={this.state.userObj}  /> ) : null}
         {this.state.statusMsg != "" ? (
           <div className="status-msg">
             <span>{this.state.statusMsg}</span>
@@ -178,6 +180,7 @@ class App extends React.Component {
             this.setState({ showAboutDialog: true });
           }}
           openDraft={this.openDraft}
+          changeMode={this.handleChangeMode}
         />
         <ModeBar
           mode={this.state.mode}

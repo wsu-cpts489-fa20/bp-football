@@ -81,6 +81,7 @@ var leagueSchema = new Schema({
     type: String,
     required: true
   },
+  //userIds: [playerSchema],
   leagueId: {
     type: String,
     required: true
@@ -113,7 +114,7 @@ var gameSchema = new Schema({
   },
   managerId: {},
   leagueId: {},
-  players: {}
+  players: [playerSchema]
 }, {
   toObject: {
     virtuals: true
@@ -121,11 +122,7 @@ var gameSchema = new Schema({
   toJSON: {
     virtuals: true
   }
-});
-/* roundSchema.virtual('SGS').get(function() {
-  return (this.strokes * 60) + (this.minutes * 60) + this.seconds;
-}); */
-//Define schema that maps to a document in the Users collection in the appdb
+}); //Define schema that maps to a document in the Users collection in the appdb
 //database.
 
 var userSchema = new Schema({
@@ -809,7 +806,7 @@ app.post("/games/:userId", /*#__PURE__*/function () {
           case 0:
             console.log("in /games (POST) route with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
 
-            if (!(!req.body.hasOwnProperty("week") || !req.body.hasOwnProperty("score") || !req.body.hasOwnProperty("opponentScore") || !req.body.hasOwnProperty("win") || !req.body.hasOwnProperty("loss"))) {
+            if (!(!req.body.hasOwnProperty("week") || !req.body.hasOwnProperty("score") || !req.body.hasOwnProperty("opponentScore") || !req.body.hasOwnProperty("win") || !req.body.hasOwnProperty("managerId") || !req.body.hasOwnProperty("leagueId") || !req.body.hasOwnProperty("players"))) {
               _context9.next = 3;
               break;
             }
@@ -857,66 +854,177 @@ app.post("/games/:userId", /*#__PURE__*/function () {
   return function (_x27, _x28, _x29) {
     return _ref9.apply(this, arguments);
   };
-}()); //READ round route: Returns all rounds associated
-//with a given user in the users collection (GET)
+}()); //CREATE Players route: Adds a new NFL players collection to the user's
+//database - POST request with all the inputs
 
-app.get("/games/:userId", /*#__PURE__*/function () {
-  var _ref10 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee10(req, res) {
-    var thisUser;
+app.post("/games/addplayers/:userId", /*#__PURE__*/function () {
+  var _ref10 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee10(req, res, next) {
+    var status;
     return _regeneratorRuntime["default"].wrap(function _callee10$(_context10) {
       while (1) {
         switch (_context10.prev = _context10.next) {
           case 0:
-            console.log("in /games route (GET) with userId = " + JSON.stringify(req.params.userId));
-            _context10.prev = 1;
-            _context10.next = 4;
+            console.log("in /games/players (POST) route with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
+
+            if (!(!req.body.hasOwnProperty("name") || !req.body.hasOwnProperty("position"))) {
+              _context10.next = 3;
+              break;
+            }
+
+            return _context10.abrupt("return", res.status(400).send("POST request on /games/players formulated incorrectly." + "Body must contain all 2 required fields: players name and position."));
+
+          case 3:
+            _context10.prev = 3;
+            _context10.next = 6;
+            return User.updateOne({
+              id: req.params.userId
+            }, {
+              $push: {
+                "games.0.players": req.body
+              }
+            });
+
+          case 6:
+            status = _context10.sent;
+
+            if (status.nModified != 1) {
+              //Should never happen!
+              res.status(400).send("Unexpected error occurred when adding game to" + " database. Game was not added.");
+            } else {
+              res.status(200).send("Players successfully added to user database.");
+            }
+
+            _context10.next = 14;
+            break;
+
+          case 10:
+            _context10.prev = 10;
+            _context10.t0 = _context10["catch"](3);
+            console.log(_context10.t0);
+            return _context10.abrupt("return", res.status(400).send("Unexpected error occurred when adding players" + " to database: " + _context10.t0));
+
+          case 14:
+          case "end":
+            return _context10.stop();
+        }
+      }
+    }, _callee10, null, [[3, 10]]);
+  }));
+
+  return function (_x30, _x31, _x32) {
+    return _ref10.apply(this, arguments);
+  };
+}()); //READ players route: Returns all players associated 
+//with a given user in the users collection (GET)
+
+app.get('/games/addplayers/:userId', /*#__PURE__*/function () {
+  var _ref11 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee11(req, res) {
+    var thisUser;
+    return _regeneratorRuntime["default"].wrap(function _callee11$(_context11) {
+      while (1) {
+        switch (_context11.prev = _context11.next) {
+          case 0:
+            console.log("in /games/players route (GET) with userId = " + JSON.stringify(req.params.userId));
+            _context11.prev = 1;
+            _context11.next = 4;
             return User.findOne({
               id: req.params.userId
             });
 
           case 4:
-            thisUser = _context10.sent;
+            thisUser = _context11.sent;
 
             if (thisUser) {
-              _context10.next = 9;
+              _context11.next = 9;
               break;
             }
 
-            return _context10.abrupt("return", res.status(400).message("No user account with specified userId was found in database."));
+            return _context11.abrupt("return", res.status(400).message("No user account with specified userId was found in database."));
 
           case 9:
-            return _context10.abrupt("return", res.status(200).json(JSON.stringify(thisUser.games)));
+            return _context11.abrupt("return", res.status(200).json(JSON.stringify(thisUser.games[0].players)));
 
           case 10:
-            _context10.next = 16;
+            _context11.next = 16;
             break;
 
           case 12:
-            _context10.prev = 12;
-            _context10.t0 = _context10["catch"](1);
+            _context11.prev = 12;
+            _context11.t0 = _context11["catch"](1);
             console.log();
-            return _context10.abrupt("return", res.status(400).message("Unexpected error occurred when looking up user in database: " + _context10.t0));
+            return _context11.abrupt("return", res.status(400).message("Unexpected error occurred when looking up user in database: " + _context11.t0));
 
           case 16:
           case "end":
-            return _context10.stop();
+            return _context11.stop();
         }
       }
-    }, _callee10, null, [[1, 12]]);
+    }, _callee11, null, [[1, 12]]);
   }));
 
-  return function (_x30, _x31) {
-    return _ref10.apply(this, arguments);
+  return function (_x33, _x34) {
+    return _ref11.apply(this, arguments);
+  };
+}()); //READ round route: Returns all rounds associated
+//with a given user in the users collection (GET)
+
+app.get("/games/:userId", /*#__PURE__*/function () {
+  var _ref12 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee12(req, res) {
+    var thisUser;
+    return _regeneratorRuntime["default"].wrap(function _callee12$(_context12) {
+      while (1) {
+        switch (_context12.prev = _context12.next) {
+          case 0:
+            console.log("in /games route (GET) with userId = " + JSON.stringify(req.params.userId));
+            _context12.prev = 1;
+            _context12.next = 4;
+            return User.findOne({
+              id: req.params.userId
+            });
+
+          case 4:
+            thisUser = _context12.sent;
+
+            if (thisUser) {
+              _context12.next = 9;
+              break;
+            }
+
+            return _context12.abrupt("return", res.status(400).message("No user account with specified userId was found in database."));
+
+          case 9:
+            return _context12.abrupt("return", res.status(200).json(JSON.stringify(thisUser.games)));
+
+          case 10:
+            _context12.next = 16;
+            break;
+
+          case 12:
+            _context12.prev = 12;
+            _context12.t0 = _context12["catch"](1);
+            console.log();
+            return _context12.abrupt("return", res.status(400).message("Unexpected error occurred when looking up user in database: " + _context12.t0));
+
+          case 16:
+          case "end":
+            return _context12.stop();
+        }
+      }
+    }, _callee12, null, [[1, 12]]);
+  }));
+
+  return function (_x35, _x36) {
+    return _ref12.apply(this, arguments);
   };
 }()); //UPDATE round route: Updates a specific round
 //for a given user in the users collection (PUT)
 
 app.put("/games/:userId/:gameId", /*#__PURE__*/function () {
-  var _ref11 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee11(req, res, next) {
+  var _ref13 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee13(req, res, next) {
     var validProps, bodyObj, bodyProp, status;
-    return _regeneratorRuntime["default"].wrap(function _callee11$(_context11) {
+    return _regeneratorRuntime["default"].wrap(function _callee13$(_context13) {
       while (1) {
-        switch (_context11.prev = _context11.next) {
+        switch (_context13.prev = _context13.next) {
           case 0:
             console.log("in /games (PUT) route with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
             validProps = ["week", "score", "opponentScore", "win", "loss"];
@@ -925,34 +1033,34 @@ app.put("/games/:userId/:gameId", /*#__PURE__*/function () {
 
             delete bodyObj.SGS; //We'll compute this below in seconds.
 
-            _context11.t0 = _regeneratorRuntime["default"].keys(bodyObj);
+            _context13.t0 = _regeneratorRuntime["default"].keys(bodyObj);
 
           case 6:
-            if ((_context11.t1 = _context11.t0()).done) {
-              _context11.next = 16;
+            if ((_context13.t1 = _context13.t0()).done) {
+              _context13.next = 16;
               break;
             }
 
-            bodyProp = _context11.t1.value;
+            bodyProp = _context13.t1.value;
 
             if (validProps.includes(bodyProp)) {
-              _context11.next = 12;
+              _context13.next = 12;
               break;
             }
 
-            return _context11.abrupt("return", res.status(400).send("games/ PUT request formulated incorrectly." + "It includes " + bodyProp + ". However, only the following props are allowed: " + "'week', 'score', 'opponentScore', 'win', 'loss', "));
+            return _context13.abrupt("return", res.status(400).send("games/ PUT request formulated incorrectly." + "It includes " + bodyProp + ". However, only the following props are allowed: " + "'week', 'score', 'opponentScore', 'win', 'loss', "));
 
           case 12:
             bodyObj["games.$." + bodyProp] = bodyObj[bodyProp];
             delete bodyObj[bodyProp];
 
           case 14:
-            _context11.next = 6;
+            _context13.next = 6;
             break;
 
           case 16:
-            _context11.prev = 16;
-            _context11.next = 19;
+            _context13.prev = 16;
+            _context13.next = 19;
             return User.updateOne({
               id: req.params.userId,
               "games._id": _mongoose["default"].Types.ObjectId(req.params.roundId)
@@ -961,7 +1069,7 @@ app.put("/games/:userId/:gameId", /*#__PURE__*/function () {
             });
 
           case 19:
-            status = _context11.sent;
+            status = _context13.sent;
 
             if (status.nModified != 1) {
               res.status(400).send("Unexpected error occurred when updating games in database. Game was not updated.");
@@ -969,25 +1077,25 @@ app.put("/games/:userId/:gameId", /*#__PURE__*/function () {
               res.status(200).send("Game successfully updated in database.");
             }
 
-            _context11.next = 27;
+            _context13.next = 27;
             break;
 
           case 23:
-            _context11.prev = 23;
-            _context11.t2 = _context11["catch"](16);
-            console.log(_context11.t2);
-            return _context11.abrupt("return", res.status(400).send("Unexpected error occurred when updating game in database: " + _context11.t2));
+            _context13.prev = 23;
+            _context13.t2 = _context13["catch"](16);
+            console.log(_context13.t2);
+            return _context13.abrupt("return", res.status(400).send("Unexpected error occurred when updating game in database: " + _context13.t2));
 
           case 27:
           case "end":
-            return _context11.stop();
+            return _context13.stop();
         }
       }
-    }, _callee11, null, [[16, 23]]);
+    }, _callee13, null, [[16, 23]]);
   }));
 
-  return function (_x32, _x33, _x34) {
-    return _ref11.apply(this, arguments);
+  return function (_x37, _x38, _x39) {
+    return _ref13.apply(this, arguments);
   };
 }()); //DELETE round route: Deletes a specific round
 //for a given user in the users collection (DELETE)
@@ -1022,3 +1130,63 @@ app.put("/games/:userId/:gameId", /*#__PURE__*/function () {
       );
   }
 }); */
+//a document in the users collection (POST)
+
+app.post("/players/:userId", /*#__PURE__*/function () {
+  var _ref14 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee14(req, res, next) {
+    var status;
+    return _regeneratorRuntime["default"].wrap(function _callee14$(_context14) {
+      while (1) {
+        switch (_context14.prev = _context14.next) {
+          case 0:
+            console.log("in /players (POST) route with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
+
+            if (req.body.hasOwnProperty("players")) {
+              _context14.next = 3;
+              break;
+            }
+
+            return _context14.abrupt("return", res.status(400).send("POST request on /games formulated incorrectly." + "Body must contain the required fields: players."));
+
+          case 3:
+            _context14.prev = 3;
+            _context14.next = 6;
+            return User.updateOne({
+              id: req.params.userId
+            }, {
+              $push: {
+                players: req.body
+              }
+            });
+
+          case 6:
+            status = _context14.sent;
+
+            if (status.nModified != 1) {
+              //Should never happen!
+              res.status(400).send("Unexpected error occurred when adding players to" + " database. Game was not added.");
+            } else {
+              res.status(200).send("Players successfully added to database.");
+            }
+
+            _context14.next = 14;
+            break;
+
+          case 10:
+            _context14.prev = 10;
+            _context14.t0 = _context14["catch"](3);
+            console.log(_context14.t0);
+            return _context14.abrupt("return", res.status(400).send("Unexpected error occurred when adding players" + " to database: " + _context14.t0));
+
+          case 14:
+          case "end":
+            return _context14.stop();
+        }
+      }
+    }, _callee14, null, [[3, 10]]);
+  }));
+
+  return function (_x40, _x41, _x42) {
+    return _ref14.apply(this, arguments);
+  };
+}());
