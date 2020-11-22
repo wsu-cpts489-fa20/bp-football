@@ -138,6 +138,8 @@ var userSchema = new Schema({
   securityQuestion: String,
   phoneNumber: String,
   teamName: String,
+  leagueId: String,
+  //league identifier
   commissioner: Boolean,
   win: {
     type: Number,
@@ -155,7 +157,8 @@ var userSchema = new Schema({
       return this.securityQuestion ? true : false;
     }
   },
-  games: [gameSchema]
+  games: [gameSchema],
+  league: [leagueSchema]
 });
 
 var User = _mongoose["default"].model("User", userSchema); //////////////////////////////////////////////////////////////////////////
@@ -592,12 +595,12 @@ app.post("/users/:userId", /*#__PURE__*/function () {
           case 0:
             console.log("in /users route (POST) with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
 
-            if (!(req.body === undefined || !req.body.hasOwnProperty("password") || !req.body.hasOwnProperty("displayName") || !req.body.hasOwnProperty("profilePicURL") || !req.body.hasOwnProperty("securityQuestion") || !req.body.hasOwnProperty("securityAnswer") || !req.body.hasOwnProperty("phoneNumber") || !req.body.hasOwnProperty("teamName"))) {
+            if (!(req.body === undefined || !req.body.hasOwnProperty("password") || !req.body.hasOwnProperty("displayName") || !req.body.hasOwnProperty("profilePicURL") || !req.body.hasOwnProperty("securityQuestion") || !req.body.hasOwnProperty("securityAnswer") || !req.body.hasOwnProperty("phoneNumber") || !req.body.hasOwnProperty("teamName") || !req.body.hasOwnProperty("leagueID"))) {
               _context6.next = 3;
               break;
             }
 
-            return _context6.abrupt("return", res.status(400).send("/users POST request formulated incorrectly. " + "It must contain 'password','displayName','profilePicURL','securityQuestion', 'securityAnswer', 'phoneNumber', and 'teamName' fields in message body."));
+            return _context6.abrupt("return", res.status(400).send("/users POST request formulated incorrectly. " + "It must contain 'password','displayName','profilePicURL','securityQuestion', 'securityAnswer', 'phoneNumber', 'teamName', and 'leagueID' fields in message body."));
 
           case 3:
             _context6.prev = 3;
@@ -631,6 +634,7 @@ app.post("/users/:userId", /*#__PURE__*/function () {
               securityAnswer: req.body.securityAnswer,
               phoneNumber: req.body.phoneNumber,
               teamName: req.body.teamName,
+              leagueId: req.body.leagueId,
               games: []
             }).save();
 
@@ -677,7 +681,7 @@ app.put("/users/:userId", /*#__PURE__*/function () {
             return _context7.abrupt("return", res.status(400).send("users/ PUT request formulated incorrectly." + "It must contain 'userId' as parameter."));
 
           case 3:
-            validProps = ["password", "displayName", "profilePicURL", "securityQuestion", "securityAnswer", "phoneNumber", "teamName"];
+            validProps = ["password", "displayName", "profilePicURL", "securityQuestion", "securityAnswer", "phoneNumber", "teamName", "leagueID"];
             _context7.t0 = _regeneratorRuntime["default"].keys(req.body);
 
           case 5:
@@ -693,7 +697,7 @@ app.put("/users/:userId", /*#__PURE__*/function () {
               break;
             }
 
-            return _context7.abrupt("return", res.status(400).send("users/ PUT request formulated incorrectly." + "Only the following props are allowed in body: " + "'password', 'displayname', 'profilePicURL', 'securityQuestion', 'securityAnswer', 'phoneNumber', 'teamName'"));
+            return _context7.abrupt("return", res.status(400).send("users/ PUT request formulated incorrectly." + "Only the following props are allowed in body: " + "'password', 'displayname', 'profilePicURL', 'securityQuestion', 'securityAnswer', 'phoneNumber', 'teamName', 'leagueID' "));
 
           case 9:
             _context7.next = 5;

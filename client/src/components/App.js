@@ -14,8 +14,9 @@ import Draft from "./Draft.js";
 const modeTitle = {};
 modeTitle[AppMode.LOGIN] = "Welcome to Fantasy Football";
 modeTitle[AppMode.FEED] = "Activity Feed";
-modeTitle[AppMode.ROUNDS] = "My Rounds";
-modeTitle[AppMode.ROUNDS_LOGROUND] = "Log New Round";
+modeTitle[AppMode.ROUNDS] = "My Game History";
+modeTitle[AppMode.ROUNDS_LOGROUND] = "Log New Game";
+//todo: remove ability to edit rounds
 modeTitle[AppMode.ROUNDS_EDITROUND] = "Edit Round";
 modeTitle[AppMode.COURSES] = "Courses";
 modeTitle[AppMode.DRAFT] = "Draft"
