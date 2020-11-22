@@ -1,27 +1,8 @@
-# Final Speedgolf App
-This code base starts with the MERN stack MVP implmentation of the speedgolf
-app as it was deployed to MongoDB Atlas and AWS EB in Chapter 24. To that it adds
-some key features that were included as end-of-chapter exercises:
+# Fantasy Football App
 
-* Ability to reset password using security question/answer
-* Ability to delete a speedgolf round
-* Ability to edit and delete a user account
+For Milestone 2, we decided to work the feature to add a new league with team managers. We got most of the functionality
+working, allowing a user to upload a .csv file that consists of the offline draft results for each manager. The goal was
+to use an API to retrieve football player information, but we had trouble with their API. Hopefully we can figure out how
+to use either ESPN's API or Yahoo!'s. There was also an issue with one of our routs to the backend. We were able to update the database using Postman to insert data, but when we tried our dev site, there would be a 400 error. That isn't a difficult fix, however, and it will be fixed shortly in the next couple days.
 
-This repo serves as the starting code for all of the CptS 489 project teams in the
-Fa20 semester. It will be pushed to their repos, deployed to their instances on
-AWS EB, and served through https://[proj-name].bfapp.org.
-
-To connect the app to your MongoDB database, create a .env file in the 
-project root directory. On the first line of that file, add this:
-MONGO_STR=<YOUR_MONGO_CONNECTION_STRING>
-
-You'll should also add the client ids and client secrets of each of your 
-OAuth providers to the .env file. Here's an example for GitHub:
-GH_CLIENT_ID='<CLIENT ID INSIDE QUOTES>'
-GH_CLIENT_SECRET='<CLIENT SECRET INSIDE QUOTES>'
-
-Make sure to add .env to your .gitignore file so that your secrets aren't
-stored in your GitHub repo!
-
-The app is presently set be served to http://localhost:8081 through the command
-npm run dev. You'll need to update DEPLOY_URL in server.js for remote deployment.
+We created a Draft.js component that handles the league creation, and added supplementary code to the SideMenu and CoursesPage, which will eventually be refactored into a LeaguePage.
