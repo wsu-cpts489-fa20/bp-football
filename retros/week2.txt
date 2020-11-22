@@ -1,0 +1,10 @@
+Meeting date: 11/16/2020
+We talked about our first week's progress as a team. What we decided went well was the live coding portion of our meetings.
+One person acts as a driver while the rest of the team watches and makes any comments on what should be implemented and 
+what isn't necessary for the requirements. 
+
+We felt we didn't meet enough last week, so we should amp our meet times to at least 3 times a week. There were also some
+things we forgot to do for the milestone, and we ended up losing points over that.
+
+In order to improve, we feel it is necessary to review the milestone every week to make sure we have done the development
+process properly. There have been a couple steps we overlooked that might smooth the collaboration aspect as a whole.
