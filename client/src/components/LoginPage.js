@@ -191,6 +191,7 @@ cancelCreateAccount = () => {
                 ref={this.passwordInputRef}
                 className="form-control login-text"
                 type="password"
+                id="passwordInput"
                 placeholder="Enter Password"
                 pattern="[A-Za-z0-9!@#$%^&*()_+\-]+"
                 required={true}
