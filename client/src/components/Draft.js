@@ -55,6 +55,7 @@ class DraftPage extends React.Component {
                 League Name:
                 <input
                   name="leagueName"
+                  id="leagueName"
                   className="form-control form-center"
                   type="text"
                   onChange={this.handleChange}
@@ -69,6 +70,7 @@ class DraftPage extends React.Component {
                 Format:
                 <select
                   name="format"
+                  id="leagueFormat"
                   className="form-control form-center"
                   onChange={this.handleChange}
                 >
@@ -83,6 +85,7 @@ class DraftPage extends React.Component {
               <br></br>           
               <button
                 type="submit" 
+                id="SubmitTeamBtn"
                 onClick={this.addPlayers(this.state.playersData)}
                 // style={{ width: "70%", fontSize: "36px" }}
                 className="btn-color-theme btn btn-primary btn-block login-btn">
