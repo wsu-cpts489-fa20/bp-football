@@ -46,25 +46,11 @@ class RoundsTable extends React.Component {
     for (let r = 0; r < this.props.games.length; ++r) {
       table.push(
         <tr key={r}>
-          <td>{this.props.rounds[r].date.substring(0, 10)}</td>
-          <td>{this.props.rounds[r].course}</td>
-          <td>
-            {Number(this.props.rounds[r].strokes) +
-              Number(this.props.rounds[r].minutes) +
-              ":" +
-              (this.props.rounds[r].seconds < 10
-                ? "0" + this.props.rounds[r].seconds
-                : this.props.rounds[r].seconds) +
-              " (" +
-              this.props.rounds[r].strokes +
-              " in " +
-              this.props.rounds[r].minutes +
-              ":" +
-              (this.props.rounds[r].seconds < 10
-                ? "0" + this.props.rounds[r].seconds
-                : this.props.rounds[r].seconds) +
-              ")"}
-          </td>
+          <td>{this.props.games[r].managerId}</td>
+          <td>{this.props.games[r].score}</td>
+          <td>{this.props.games[r].week}</td>
+          <td>{this.props.games[r].leagueId}</td>
+          <td>{this.props.games[r].score}</td>
         </tr>
       );
     }

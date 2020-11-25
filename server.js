@@ -6,7 +6,7 @@
 import passport from "passport";
 import passportGithub from "passport-github";
 import passportLocal from "passport-local";
-import passportGoogle from "passport-google-oauth2"
+import passportGoogle from "passport-google-oauth2";
 import session from "express-session";
 import regeneratorRuntime from "regenerator-runtime";
 import path from "path";
@@ -60,14 +60,29 @@ const Schema = mongoose.Schema;
   }
 }); */
 
-//ToDo: make sure collection is updated with proper values.
+// Add a league schema
+const leagueSchema = new Schema({
+  leagueName: { type: String, required: true },
+  //userIds: [playerSchema],
+  leagueId: { type: String, required: true },
+});
+
+const playerSchema = new Schema({
+  position: String,
+  name: String,
+});
+
+//ToDo: update default values for the rest of the database entries (i.e. commissioner, )
+
 const gameSchema = new Schema(
   {
     week: { type: String, required: true },
     score: { type: Number, required: true, min: 0, max: 300 },
     opponentScore: { type: Number, required: true, min: 0, max: 300 },
-    win: { type: Number, required: true, min: 0, max: 15 },
-    loss: { type: Number, required: true, min: 0, max: 15 },
+    win: { type: Boolean },
+    managerId: {},
+    leagueId: {},
+    players: [playerSchema],
   },
   {
     toObject: {
@@ -79,9 +94,6 @@ const gameSchema = new Schema(
   }
 );
 
-/* roundSchema.virtual('SGS').get(function() {
-  return (this.strokes * 60) + (this.minutes * 60) + this.seconds;
-}); */
 
 //Define schema that maps to a document in the Users collection in the appdb
 //database.
@@ -94,6 +106,10 @@ const userSchema = new Schema({
   securityQuestion: String,
   phoneNumber: String,
   teamName: String,
+  leagueId: String, //league identifier
+  commissioner: Boolean,
+  win: { type: Number, min: 0, max: 15 },
+  loss: { type: Number, min: 0, max: 15 },
   securityAnswer: {
     type: String,
     required: function () {
@@ -101,6 +117,7 @@ const userSchema = new Schema({
     },
   },
   games: [gameSchema],
+  league: [leagueSchema],
 });
 const User = mongoose.model("User", userSchema);
 
@@ -109,6 +126,7 @@ const User = mongoose.model("User", userSchema);
 //The following code sets up the app with OAuth authentication using
 //the 'github' strategy in passport.js.
 //////////////////////////////////////////////////////////////////////////
+
 passport.use(
   new GithubStrategy(
     {
@@ -205,30 +223,34 @@ passport.use(
 //the 'google' strategy in passport.js.
 //////////////////////////////////////////////////////////////////////////
 passport.use(
-  new GoogleStrategy({
-  clientID: process.env.GG_CLIENT_ID,
-  clientSecret: process.env.GG_CLIENT_SECRET,
-  callbackURL: DEPLOY_URL + "/auth/google/callback"
-},
-//The following function is called after user authenticates with github
-async (accessToken, refreshToken, profile, done) => {
-  console.log("User authenticated through Google! In passport callback.");
-  //Our convention is to build userId from displayName and provider
-  const userId = `${profile.sub}@${profile.provider}`;
-  //See if document with this unique userId exists in database 
-  let currentUser = await User.findOne({id: userId});
-  if (!currentUser) { //Add this user to the database
-      currentUser = await new User({
-      //id: profile.displayName + "@" + profile.provider + ".com",
-      id: profile.emails[0].value,
-      displayName: profile.displayName,
-      authStrategy: profile.provider,
-      profilePicURL: profile.photos[0].value,
-      games: []
-    }).save();
-}
-return done(null,currentUser);
-}));
+  new GoogleStrategy(
+    {
+      clientID: process.env.GG_CLIENT_ID,
+      clientSecret: process.env.GG_CLIENT_SECRET,
+      callbackURL: DEPLOY_URL + "/auth/google/callback",
+    },
+    //The following function is called after user authenticates with github
+    async (accessToken, refreshToken, profile, done) => {
+      console.log("User authenticated through Google! In passport callback.");
+      //Our convention is to build userId from displayName and provider
+      const userId = `${profile.sub}@${profile.provider}`;
+      //See if document with this unique userId exists in database
+      let currentUser = await User.findOne({ id: userId });
+      if (!currentUser) {
+        //Add this user to the database
+        currentUser = await new User({
+          //id: profile.displayName + "@" + profile.provider + ".com",
+          id: profile.emails[0].value,
+          displayName: profile.displayName,
+          authStrategy: profile.provider,
+          profilePicURL: profile.photos[0].value,
+          games: [],
+        }).save();
+      }
+      return done(null, currentUser);
+    }
+  )
+);
 
 //Serialize the current user to the session
 passport.serializeUser((user, done) => {
@@ -420,14 +442,15 @@ app.post("/users/:userId", async (req, res, next) => {
     !req.body.hasOwnProperty("securityQuestion") ||
     !req.body.hasOwnProperty("securityAnswer") ||
     !req.body.hasOwnProperty("phoneNumber") ||
-    !req.body.hasOwnProperty("teamName") 
+    !req.body.hasOwnProperty("teamName") ||
+    !req.body.hasOwnProperty("leagueID")
   ) {
     //Body does not contain correct properties
     return res
       .status(400)
       .send(
         "/users POST request formulated incorrectly. " +
-          "It must contain 'password','displayName','profilePicURL','securityQuestion', 'securityAnswer', 'phoneNumber', and 'teamName' fields in message body."
+          "It must contain 'password','displayName','profilePicURL','securityQuestion', 'securityAnswer', 'phoneNumber', 'teamName', and 'leagueID' fields in message body."
       );
   }
   try {
@@ -451,6 +474,7 @@ app.post("/users/:userId", async (req, res, next) => {
         securityAnswer: req.body.securityAnswer,
         phoneNumber: req.body.phoneNumber,
         teamName: req.body.teamName,
+        leagueId: req.body.leagueId,
         games: [],
       }).save();
       return res
@@ -493,6 +517,7 @@ app.put("/users/:userId", async (req, res, next) => {
     "securityAnswer",
     "phoneNumber",
     "teamName",
+    "leagueID",
   ];
   for (const bodyProp in req.body) {
     if (!validProps.includes(bodyProp)) {
@@ -501,7 +526,7 @@ app.put("/users/:userId", async (req, res, next) => {
         .send(
           "users/ PUT request formulated incorrectly." +
             "Only the following props are allowed in body: " +
-            "'password', 'displayname', 'profilePicURL', 'securityQuestion', 'securityAnswer', 'phoneNumber', 'teamName'"
+            "'password', 'displayname', 'profilePicURL', 'securityQuestion', 'securityAnswer', 'phoneNumber', 'teamName', 'leagueID' "
         );
     }
   }
@@ -587,7 +612,9 @@ app.post("/games/:userId", async (req, res, next) => {
     !req.body.hasOwnProperty("score") ||
     !req.body.hasOwnProperty("opponentScore") ||
     !req.body.hasOwnProperty("win") ||
-    !req.body.hasOwnProperty("loss")
+    !req.body.hasOwnProperty("managerId") ||
+    !req.body.hasOwnProperty("leagueId") ||
+    !req.body.hasOwnProperty("players")
   ) {
     //Body does not contain correct properties
     return res
@@ -620,6 +647,71 @@ app.post("/games/:userId", async (req, res, next) => {
       .send(
         "Unexpected error occurred when adding game" + " to database: " + err
       );
+  }
+});
+
+//CREATE Players route: Adds a new NFL players collection to the user's
+//database - POST request with all the inputs
+app.post("/games/addplayers/:userId", async (req, res, next) => {
+  console.log(
+    "in /games/players (POST) route with params = " +
+      JSON.stringify(req.params) +
+      " and body = " +
+      JSON.stringify(req.body)
+  );
+  if (
+    !req.body.hasOwnProperty("name") ||
+    !req.body.hasOwnProperty("position")
+  ) {
+    //Body does not contain correct properties
+    return res
+      .status(400)
+      .send(
+        "POST request on /games/players formulated incorrectly." +
+          "Body must contain all 2 required fields: players name and position."
+      );
+  }
+  try {
+    let status = await User.updateOne(
+      { id: req.params.userId },
+      { $push: { "games.0.players": req.body } }
+    );
+    if (status.nModified != 1) {
+      //Should never happen!
+      res
+        .status(400)
+        .send(
+          "Unexpected error occurred when adding game to" +
+            " database. Game was not added."
+        );
+    } else {
+      res.status(200).send("Players successfully added to user database.");
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when adding players" + " to database: " + err
+      );
+  }
+});
+
+//READ players route: Returns all players associated 
+//with a given user in the users collection (GET)
+app.get('/games/addplayers/:userId', async(req, res) => {
+  console.log("in /games/players route (GET) with userId = " + 
+    JSON.stringify(req.params.userId));
+  try {
+    let thisUser = await User.findOne({id: req.params.userId});
+    if (!thisUser) {
+      return res.status(400).message("No user account with specified userId was found in database.");
+    } else {
+      return res.status(200).json(JSON.stringify(thisUser.games[0].players));
+    }
+  } catch (err) {
+    console.log()
+    return res.status(400).message("Unexpected error occurred when looking up user in database: " + err);
   }
 });
 
@@ -736,3 +828,48 @@ app.put("/games/:userId/:gameId", async (req, res, next) => {
       );
   }
 }); */
+
+//a document in the users collection (POST)
+app.post("/players/:userId", async (req, res, next) => {
+  console.log(
+    "in /players (POST) route with params = " +
+      JSON.stringify(req.params) +
+      " and body = " +
+      JSON.stringify(req.body)
+  );
+  if (
+    !req.body.hasOwnProperty("players") 
+  ) {
+    //Body does not contain correct properties
+    return res
+      .status(400)
+      .send(
+        "POST request on /games formulated incorrectly." +
+          "Body must contain the required fields: players."
+      );
+  }
+  try {
+    let status = await User.updateOne(
+      { id: req.params.userId },
+      { $push: { players: req.body } }
+    );
+    if (status.nModified != 1) {
+      //Should never happen!
+      res
+        .status(400)
+        .send(
+          "Unexpected error occurred when adding players to" +
+            " database. Game was not added."
+        );
+    } else {
+      res.status(200).send("Players successfully added to database.");
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when adding players" + " to database: " + err
+      );
+  }
+});
