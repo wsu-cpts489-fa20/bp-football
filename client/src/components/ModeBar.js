@@ -10,7 +10,7 @@ class ModeBar extends React.Component {
         <a className={(this.props.mode === AppMode.FEED ? " item-selected" : null)}
             onClick={()=>this.props.changeMode(AppMode.FEED)}>
           <span className="modebaricon fa fa-th-list"></span>
-          <span className="modebar-text">Feed</span>
+          <span className="modebar-text">My Team</span>
         </a>
         <a className={(this.props.mode === AppMode.ROUNDS || 
                this.props.mode === AppMode.ROUNDS_EDITROUND || 
@@ -23,7 +23,7 @@ class ModeBar extends React.Component {
         <a className={(this.props.mode === AppMode.COURSES ? " item-selected" : null)}
           onClick={()=>this.props.changeMode(AppMode.COURSES)}>
           <span className="modebar-icon  fa fa-flag"></span>
-          <span className="modebar-text">MyLeague</span>
+          <span className="modebar-text">My League</span>
         </a> 
         </div>
       );
