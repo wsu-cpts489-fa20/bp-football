@@ -8,6 +8,7 @@ import AppMode from "./../AppMode.js";
 import FeedPage from "./FeedPage.js";
 import Rounds from "./Rounds.js";
 import CoursesPage from "./CoursesPage.js";
+import ProfilePage from "./Profile";
 import AboutBox from "./AboutBox.js";
 import Draft from "./Draft.js";
 
@@ -19,7 +20,8 @@ modeTitle[AppMode.ROUNDS_LOGROUND] = "Log New Game";
 //todo: remove ability to edit rounds
 modeTitle[AppMode.ROUNDS_EDITROUND] = "Edit Round";
 modeTitle[AppMode.COURSES] = "Courses";
-modeTitle[AppMode.DRAFT] = "Draft"
+modeTitle[AppMode.DRAFT] = "Draft";
+modeTitle[AppMode.PROFILE] = "Profile Page";
 
 const modeToPage = {};
 modeToPage[AppMode.LOGIN] = LoginPage;
@@ -29,6 +31,7 @@ modeToPage[AppMode.ROUNDS_LOGROUND] = Rounds;
 modeToPage[AppMode.ROUNDS_EDITROUND] = Rounds;
 modeToPage[AppMode.COURSES] = CoursesPage;
 modeToPage[AppMode.DRAFT] = Draft;
+modeToPage[AppMode.PROFILE] = ProfilePage;
 
 class App extends React.Component {
   constructor() {
@@ -143,7 +146,9 @@ class App extends React.Component {
         {/* {this.state.showAboutDialog ? (
           <AboutBox close={() => this.setState({ showAboutDialog: false })} />
         ) : null} */}
-        {this.state.showDraftDialog ? ( <Draft close={this.closeDraft} userObj={this.state.userObj}  /> ) : null}
+        {this.state.showDraftDialog ? (
+          <Draft close={this.closeDraft} userObj={this.state.userObj} />
+        ) : null}
         {this.state.statusMsg != "" ? (
           <div className="status-msg">
             <span>{this.state.statusMsg}</span>
