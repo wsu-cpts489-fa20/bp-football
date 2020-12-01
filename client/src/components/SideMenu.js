@@ -66,13 +66,20 @@ class SideMenu extends React.Component {
         {/* MENU CONTENT */}
         {/* {this.renderModeMenuItems()} */}
         {/* The following menu items are present regardless of mode */}
+        <a
+          id="profileBtn"
+          className="sidemenu-item"
+          onClick={this.props.changeMode(AppMode.PROFILE)}
+        >
+          <span className="fa fa-info-circle"></span>&nbsp;About
+        </a>
         {this.props.localAccount ? (
           <a
             id="accountBtn"
             className="sidemenu-item"
             onClick={this.props.editAccount}
           >
-            <span className="fa fa-user"></span>&nbsp;Account
+            <span className="fa fa-user"></span>&nbsp;Edit Account
           </a>
         ) : null}
         <a
