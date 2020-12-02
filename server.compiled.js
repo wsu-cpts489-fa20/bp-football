@@ -74,14 +74,13 @@ var Schema = _mongoose["default"].Schema;
   virtuals: true 
   }
 }); */
-// Add a league schema
 
 var leagueSchema = new Schema({
   leagueName: {
     type: String,
     required: true
   },
-  //userIds: [playerSchema],
+  userIds: [String],
   leagueId: {
     type: String,
     required: true
@@ -90,8 +89,7 @@ var leagueSchema = new Schema({
 var playerSchema = new Schema({
   position: String,
   name: String
-}); //ToDo: update default values for the rest of the database entries (i.e. commissioner, )
-
+});
 var gameSchema = new Schema({
   week: {
     type: String,
@@ -122,6 +120,11 @@ var gameSchema = new Schema({
   toJSON: {
     virtuals: true
   }
+});
+var achievementSchema = new Schema({
+  title: String,
+  description: String,
+  icon: String
 }); //Define schema that maps to a document in the Users collection in the appdb
 //database.
 
@@ -158,6 +161,7 @@ var userSchema = new Schema({
     }
   },
   games: [gameSchema],
+  team: [playerSchema],
   league: [leagueSchema]
 });
 
@@ -914,10 +918,10 @@ app.post("/games/addplayers/:userId", /*#__PURE__*/function () {
   return function (_x30, _x31, _x32) {
     return _ref10.apply(this, arguments);
   };
-}()); //READ players route: Returns all players associated 
+}()); //READ players route: Returns all players associated
 //with a given user in the users collection (GET)
 
-app.get('/games/addplayers/:userId', /*#__PURE__*/function () {
+app.get("/games/addplayers/:userId", /*#__PURE__*/function () {
   var _ref11 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee11(req, res) {
     var thisUser;
     return _regeneratorRuntime["default"].wrap(function _callee11$(_context11) {
