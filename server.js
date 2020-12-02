@@ -71,7 +71,6 @@ const playerSchema = new Schema({
   name: String,
 });
 
-
 const gameSchema = new Schema(
   {
     week: { type: String, required: true },
@@ -92,6 +91,11 @@ const gameSchema = new Schema(
   }
 );
 
+const achievementSchema = new Schema({
+  title: String,
+  description: String,
+  icon: String,
+});
 
 //Define schema that maps to a document in the Users collection in the appdb
 //database.
@@ -105,6 +109,7 @@ const userSchema = new Schema({
   phoneNumber: String,
   teamName: String,
   leagueId: String, //league identifier
+
   commissioner: Boolean,
   win: { type: Number, min: 0, max: 15 },
   loss: { type: Number, min: 0, max: 15 },
@@ -115,6 +120,7 @@ const userSchema = new Schema({
     },
   },
   games: [gameSchema],
+  team: [playerSchema],
   league: [leagueSchema],
 });
 const User = mongoose.model("User", userSchema);
@@ -695,21 +701,31 @@ app.post("/games/addplayers/:userId", async (req, res, next) => {
   }
 });
 
-//READ players route: Returns all players associated 
+//READ players route: Returns all players associated
 //with a given user in the users collection (GET)
-app.get('/games/addplayers/:userId', async(req, res) => {
-  console.log("in /games/players route (GET) with userId = " + 
-    JSON.stringify(req.params.userId));
+app.get("/games/addplayers/:userId", async (req, res) => {
+  console.log(
+    "in /games/players route (GET) with userId = " +
+      JSON.stringify(req.params.userId)
+  );
   try {
-    let thisUser = await User.findOne({id: req.params.userId});
+    let thisUser = await User.findOne({ id: req.params.userId });
     if (!thisUser) {
-      return res.status(400).message("No user account with specified userId was found in database.");
+      return res
+        .status(400)
+        .message(
+          "No user account with specified userId was found in database."
+        );
     } else {
       return res.status(200).json(JSON.stringify(thisUser.games[0].players));
     }
   } catch (err) {
-    console.log()
-    return res.status(400).message("Unexpected error occurred when looking up user in database: " + err);
+    console.log();
+    return res
+      .status(400)
+      .message(
+        "Unexpected error occurred when looking up user in database: " + err
+      );
   }
 });
 
@@ -835,9 +851,7 @@ app.post("/players/:userId", async (req, res, next) => {
       " and body = " +
       JSON.stringify(req.body)
   );
-  if (
-    !req.body.hasOwnProperty("players") 
-  ) {
+  if (!req.body.hasOwnProperty("players")) {
     //Body does not contain correct properties
     return res
       .status(400)
