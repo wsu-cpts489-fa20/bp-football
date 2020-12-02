@@ -1,11 +1,59 @@
 import React from "react";
 
+
+
 // My Teams page, instead of Feed
 class FeedPage extends React.Component {
   render() {
     return (
       <div className="padded-page">
         <center>
+          <form>
+            <label>
+              QB 
+              <select>
+                <option>
+                  {/* all available qbs*/}
+                </option>
+              </select>
+            </label>
+
+            <label>
+              WR 
+              <select>
+                <option>
+                  {/* all available wrs*/}
+                </option>
+              </select>
+            </label>
+
+            <label>
+              RB 
+              <select>
+                <option>
+                  {/* all available wrs*/}
+                </option>
+              </select>
+            </label>
+
+            <label>
+              K 
+              <select>
+                <option>
+                  {/* all available wrs*/}
+                </option>
+              </select>
+            </label>
+
+            <label>
+              D 
+              <select>
+                <option>
+                  {/* all available qbs*/}
+                </option>
+              </select>
+            </label>
+          </form>
           {/*
             create a form:
             front-end:
