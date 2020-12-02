@@ -60,10 +60,9 @@ const Schema = mongoose.Schema;
   }
 }); */
 
-// Add a league schema
 const leagueSchema = new Schema({
   leagueName: { type: String, required: true },
-  //userIds: [playerSchema],
+  userIds: [String],
   leagueId: { type: String, required: true },
 });
 
@@ -72,7 +71,6 @@ const playerSchema = new Schema({
   name: String,
 });
 
-//ToDo: update default values for the rest of the database entries (i.e. commissioner, )
 
 const gameSchema = new Schema(
   {
