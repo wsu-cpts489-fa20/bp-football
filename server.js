@@ -119,6 +119,7 @@ const userSchema = new Schema({
       return this.securityQuestion ? true : false;
     },
   },
+  players: [playerSchema],
   games: [gameSchema],
   team: [playerSchema],
   league: [leagueSchema],
