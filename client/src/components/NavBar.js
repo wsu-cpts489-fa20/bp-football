@@ -34,7 +34,7 @@ class NavBar extends React.Component {
             ></span>
           </button>
           <img
-            src="http://tiny.cc/fflogo"
+            // src="http://tiny.cc/fflogo"
             alt="Speed Score Logo"
             height="38px"
             width="38px"

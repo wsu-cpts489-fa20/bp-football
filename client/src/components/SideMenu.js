@@ -69,7 +69,7 @@ class SideMenu extends React.Component {
         <a
           id="profileBtn"
           className="sidemenu-item"
-          onClick={this.props.changeMode(AppMode.PROFILE)}
+          //onClick={() => this.props.changeMode(AppMode.PROFILE)}
         >
           <span className="fa fa-info-circle"></span>&nbsp;Profile
         </a>
