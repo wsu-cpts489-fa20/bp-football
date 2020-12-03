@@ -660,7 +660,7 @@ app.post("/games/:userId", async (req, res, next) => {
 
 //CREATE Players route: Adds a new NFL players collection to the user's
 //database - POST request with all the inputs
-app.post("/games/addplayers/:userId", async (req, res, next) => {
+app.post("/addplayers/:userId", async (req, res, next) => {
   console.log(
     "in /games/players (POST) route with params = " +
       JSON.stringify(req.params) +
@@ -669,7 +669,8 @@ app.post("/games/addplayers/:userId", async (req, res, next) => {
   );
   if (
     !req.body.hasOwnProperty("name") ||
-    !req.body.hasOwnProperty("position")
+    !req.body.hasOwnProperty("position") ||
+    !req.body.hasOwnProperty("starter")
   ) {
     //Body does not contain correct properties
     return res
@@ -682,7 +683,8 @@ app.post("/games/addplayers/:userId", async (req, res, next) => {
   try {
     let status = await User.updateOne(
       { id: req.params.userId },
-      { $push: { "games.0.players": req.body } }
+      // { $push: { "games.0.players": req.body } }
+      { $push: { "players": req.body } } //add the players into the database
     );
     if (status.nModified != 1) {
       //Should never happen!
@@ -707,7 +709,7 @@ app.post("/games/addplayers/:userId", async (req, res, next) => {
 
 //READ players route: Returns all players associated
 //with a given user in the users collection (GET)
-app.get("/games/addplayers/:userId", async (req, res) => {
+app.get("/getplayers/:userId", async (req, res) => {
   console.log(
     "in /games/players route (GET) with userId = " +
       JSON.stringify(req.params.userId)
@@ -721,7 +723,7 @@ app.get("/games/addplayers/:userId", async (req, res) => {
           "No user account with specified userId was found in database."
         );
     } else {
-      return res.status(200).json(JSON.stringify(thisUser.games[0].players));
+      return res.status(200).json(JSON.stringify(thisUser.players));
     }
   } catch (err) {
     console.log();
@@ -756,6 +758,39 @@ app.get("/games/:userId", async (req, res) => {
       .status(400)
       .message(
         "Unexpected error occurred when looking up user in database: " + err
+      );
+  }
+});
+
+//DELETE round route: Deletes a specific round
+//for a given user in the users collection (DELETE)
+app.delete("/deleteplayer/:userId/:playername", async (req, res, next) => {
+  console.log(
+    "in /players (DELETE) route with params = " + JSON.stringify(req.params)
+  );
+  try {
+    let status = await User.updateOne(
+      { id: req.params.userId },
+      {
+        $pull: { players: { name: (req.params.playername) } },
+      }
+    );
+    if (status.nModified != 1) {
+      //Should never happen!
+      res
+        .status(400)
+        .send(
+          "Unexpected error occurred when deleting player from database. Player was not deleted."
+        );
+    } else {
+      res.status(200).send("specified player successfully deleted from database.");
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when deleting player from database: " + err
       );
   }
 });
