@@ -669,7 +669,8 @@ app.post("/addplayers/:userId", async (req, res, next) => {
   );
   if (
     !req.body.hasOwnProperty("name") ||
-    !req.body.hasOwnProperty("position")
+    !req.body.hasOwnProperty("position") ||
+    !req.body.hasOwnProperty("starter")
   ) {
     //Body does not contain correct properties
     return res
@@ -708,7 +709,7 @@ app.post("/addplayers/:userId", async (req, res, next) => {
 
 //READ players route: Returns all players associated
 //with a given user in the users collection (GET)
-app.get("/games/addplayers/:userId", async (req, res) => {
+app.get("/getplayers/:userId", async (req, res) => {
   console.log(
     "in /games/players route (GET) with userId = " +
       JSON.stringify(req.params.userId)
@@ -722,7 +723,7 @@ app.get("/games/addplayers/:userId", async (req, res) => {
           "No user account with specified userId was found in database."
         );
     } else {
-      return res.status(200).json(JSON.stringify(thisUser.games[0].players));
+      return res.status(200).json(JSON.stringify(thisUser.players));
     }
   } catch (err) {
     console.log();
@@ -760,6 +761,39 @@ app.get("/games/:userId", async (req, res) => {
       );
   }
 });
+
+//DELETE round route: Deletes a specific round
+//for a given user in the users collection (DELETE)
+/* app.delete("/rounds/:userId/:roundId", async (req, res, next) => {
+  console.log(
+    "in /rounds (DELETE) route with params = " + JSON.stringify(req.params)
+  );
+  try {
+    let status = await User.updateOne(
+      { id: req.params.userId },
+      {
+        $pull: { rounds: { _id: mongoose.Types.ObjectId(req.params.roundId) } },
+      }
+    );
+    if (status.nModified != 1) {
+      //Should never happen!
+      res
+        .status(400)
+        .send(
+          "Unexpected error occurred when deleting round from database. Round was not deleted."
+        );
+    } else {
+      res.status(200).send("Round successfully deleted from database.");
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when deleting round from database: " + err
+      );
+  }
+}); */
 
 //UPDATE round route: Updates a specific round
 //for a given user in the users collection (PUT)

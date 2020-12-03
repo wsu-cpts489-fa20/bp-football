@@ -874,7 +874,7 @@ app.post("/addplayers/:userId", /*#__PURE__*/function () {
           case 0:
             console.log("in /games/players (POST) route with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
 
-            if (!(!req.body.hasOwnProperty("name") || !req.body.hasOwnProperty("position"))) {
+            if (!(!req.body.hasOwnProperty("name") || !req.body.hasOwnProperty("position") || !req.body.hasOwnProperty("starter"))) {
               _context10.next = 3;
               break;
             }
@@ -927,7 +927,7 @@ app.post("/addplayers/:userId", /*#__PURE__*/function () {
 }()); //READ players route: Returns all players associated
 //with a given user in the users collection (GET)
 
-app.get("/games/addplayers/:userId", /*#__PURE__*/function () {
+app.get("/getplayers/:userId", /*#__PURE__*/function () {
   var _ref11 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee11(req, res) {
     var thisUser;
     return _regeneratorRuntime["default"].wrap(function _callee11$(_context11) {
@@ -952,7 +952,7 @@ app.get("/games/addplayers/:userId", /*#__PURE__*/function () {
             return _context11.abrupt("return", res.status(400).message("No user account with specified userId was found in database."));
 
           case 9:
-            return _context11.abrupt("return", res.status(200).json(JSON.stringify(thisUser.games[0].players)));
+            return _context11.abrupt("return", res.status(200).json(JSON.stringify(thisUser.players)));
 
           case 10:
             _context11.next = 16;
@@ -1026,7 +1026,40 @@ app.get("/games/:userId", /*#__PURE__*/function () {
   return function (_x35, _x36) {
     return _ref12.apply(this, arguments);
   };
-}()); //UPDATE round route: Updates a specific round
+}()); //DELETE round route: Deletes a specific round
+//for a given user in the users collection (DELETE)
+
+/* app.delete("/rounds/:userId/:roundId", async (req, res, next) => {
+  console.log(
+    "in /rounds (DELETE) route with params = " + JSON.stringify(req.params)
+  );
+  try {
+    let status = await User.updateOne(
+      { id: req.params.userId },
+      {
+        $pull: { rounds: { _id: mongoose.Types.ObjectId(req.params.roundId) } },
+      }
+    );
+    if (status.nModified != 1) {
+      //Should never happen!
+      res
+        .status(400)
+        .send(
+          "Unexpected error occurred when deleting round from database. Round was not deleted."
+        );
+    } else {
+      res.status(200).send("Round successfully deleted from database.");
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when deleting round from database: " + err
+      );
+  }
+}); */
+//UPDATE round route: Updates a specific round
 //for a given user in the users collection (PUT)
 
 app.put("/games/:userId/:gameId", /*#__PURE__*/function () {
