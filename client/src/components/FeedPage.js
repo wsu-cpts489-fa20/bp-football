@@ -1,69 +1,71 @@
 import React from "react";
-
-
-
 // My Teams page, instead of Feed
 class FeedPage extends React.Component {
+  constructor(props) {
+    super();
+    this.state = {
+      players: [],
+    };
+  }
+
+  populateForm = () => {
+    //ToDo: populate selection forms
+    // sort by position
+    //have starters be the initial value
+  };
+
+  //componentDidMount
+  componentDidMount = async () => {
+    let response = await fetch("/users/" + this.props.userObj.id);
+    response = await response.json();
+    const obj = JSON.parse(response);
+    console.log(obj.players);
+    this.setState({
+      players: obj.players,
+    });
+    this.populateForm();
+  };
+
   render() {
     return (
       <div className="padded-page">
         <center>
           <form>
             <label>
-              QB 
+              QB
               <select>
-                <option>
-                  {/* all available qbs*/}
-                </option>
+                <option>{/* all available qbs*/}</option>
               </select>
             </label>
 
             <label>
-              WR 
+              WR
               <select>
-                <option>
-                  {/* all available wrs*/}
-                </option>
+                <option>{/* all available wrs*/}</option>
               </select>
             </label>
 
             <label>
-              RB 
+              RB
               <select>
-                <option>
-                  {/* all available wrs*/}
-                </option>
+                <option>{/* all available wrs*/}</option>
               </select>
             </label>
 
             <label>
-              K 
+              K
               <select>
-                <option>
-                  {/* all available wrs*/}
-                </option>
+                <option>{/* all available wrs*/}</option>
               </select>
             </label>
 
             <label>
-              D 
+              D
               <select>
-                <option>
-                  {/* all available qbs*/}
-                </option>
+                <option>{/* all available qbs*/}</option>
               </select>
             </label>
           </form>
-          {/*
-            create a form:
-            front-end:
-            - each input represents a position on a football team
-            back-end:
-            - automatically fill in input boxes with current players on the roster
-                - i.e. wb, wr, rb, d, k
-            - inputs can be drop downs, or w/e else is easiest
-            - dropdown filters by position 
-            */}
         </center>
       </div>
     );

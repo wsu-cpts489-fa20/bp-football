@@ -160,6 +160,7 @@ var userSchema = new Schema({
       return this.securityQuestion ? true : false;
     }
   },
+  players: [playerSchema],
   games: [gameSchema],
   team: [playerSchema],
   league: [leagueSchema]
@@ -209,6 +210,7 @@ function () {
               displayName: profile.displayName,
               authStrategy: profile.provider,
               profilePicURL: profile.photos[0].value,
+              players: [],
               games: []
             }).save();
 
@@ -372,6 +374,7 @@ function () {
               displayName: profile.displayName,
               authStrategy: profile.provider,
               profilePicURL: profile.photos[0].value,
+              players: [],
               games: []
             }).save();
 
