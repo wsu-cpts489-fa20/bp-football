@@ -8,13 +8,9 @@ import AppMode from "./../AppMode.js";
 import FeedPage from "./FeedPage.js";
 import Rounds from "./Rounds.js";
 import CoursesPage from "./CoursesPage.js";
-<<<<<<< HEAD
-import ProfilePage from "./ProfilePage";
-=======
-import Profile from "./Profile";
->>>>>>> 6aae97b52e29b048148c9f8423257bf79b003116
-import AboutBox from "./AboutBox.js";
 import Draft from "./Draft.js";
+import ProfilePage from "./ProfilePage";
+
 
 const modeTitle = {};
 modeTitle[AppMode.LOGIN] = "Welcome to Fantasy Football";
@@ -35,7 +31,7 @@ modeToPage[AppMode.ROUNDS_LOGROUND] = Rounds;
 modeToPage[AppMode.ROUNDS_EDITROUND] = Rounds;
 modeToPage[AppMode.COURSES] = CoursesPage;
 modeToPage[AppMode.DRAFT] = Draft;
-modeToPage[AppMode.PROFILE] = Profile;
+modeToPage[AppMode.PROFILE] = ProfilePage;
 
 class App extends React.Component {
   constructor() {
