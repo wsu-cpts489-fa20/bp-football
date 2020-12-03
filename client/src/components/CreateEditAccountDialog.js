@@ -1,6 +1,5 @@
 import React from "react";
 import ConfirmDeleteAccount from "./ConfirmDeleteAccount.js";
-import confirmDeleteAccount from "./ConfirmDeleteAccount.js";
 
 class CreateEditAccountDialog extends React.Component {
   constructor(props) {
