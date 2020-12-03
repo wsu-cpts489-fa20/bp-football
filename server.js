@@ -764,15 +764,15 @@ app.get("/games/:userId", async (req, res) => {
 
 //DELETE round route: Deletes a specific round
 //for a given user in the users collection (DELETE)
-/* app.delete("/rounds/:userId/:roundId", async (req, res, next) => {
+app.delete("/deleteplayer/:userId/:playername", async (req, res, next) => {
   console.log(
-    "in /rounds (DELETE) route with params = " + JSON.stringify(req.params)
+    "in /players (DELETE) route with params = " + JSON.stringify(req.params)
   );
   try {
     let status = await User.updateOne(
       { id: req.params.userId },
       {
-        $pull: { rounds: { _id: mongoose.Types.ObjectId(req.params.roundId) } },
+        $pull: { players: { name: (req.params.playername) } },
       }
     );
     if (status.nModified != 1) {
@@ -780,20 +780,20 @@ app.get("/games/:userId", async (req, res) => {
       res
         .status(400)
         .send(
-          "Unexpected error occurred when deleting round from database. Round was not deleted."
+          "Unexpected error occurred when deleting player from database. Player was not deleted."
         );
     } else {
-      res.status(200).send("Round successfully deleted from database.");
+      res.status(200).send("specified player successfully deleted from database.");
     }
   } catch (err) {
     console.log(err);
     return res
       .status(400)
       .send(
-        "Unexpected error occurred when deleting round from database: " + err
+        "Unexpected error occurred when deleting player from database: " + err
       );
   }
-}); */
+});
 
 //UPDATE round route: Updates a specific round
 //for a given user in the users collection (PUT)
