@@ -657,7 +657,7 @@ app.post("/games/:userId", async (req, res, next) => {
 
 //CREATE Players route: Adds a new NFL players collection to the user's
 //database - POST request with all the inputs
-app.post("/games/addplayers/:userId", async (req, res, next) => {
+app.post("/addplayers/:userId", async (req, res, next) => {
   console.log(
     "in /games/players (POST) route with params = " +
       JSON.stringify(req.params) +
@@ -679,7 +679,8 @@ app.post("/games/addplayers/:userId", async (req, res, next) => {
   try {
     let status = await User.updateOne(
       { id: req.params.userId },
-      { $push: { "games.0.players": req.body } }
+      // { $push: { "games.0.players": req.body } }
+      { $push: { "players": req.body } } //add the players into the database
     );
     if (status.nModified != 1) {
       //Should never happen!

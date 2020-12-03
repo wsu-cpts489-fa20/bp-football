@@ -160,6 +160,7 @@ var userSchema = new Schema({
       return this.securityQuestion ? true : false;
     }
   },
+  players: [playerSchema],
   games: [gameSchema],
   team: [playerSchema],
   league: [leagueSchema]
@@ -861,7 +862,7 @@ app.post("/games/:userId", /*#__PURE__*/function () {
 }()); //CREATE Players route: Adds a new NFL players collection to the user's
 //database - POST request with all the inputs
 
-app.post("/games/addplayers/:userId", /*#__PURE__*/function () {
+app.post("/addplayers/:userId", /*#__PURE__*/function () {
   var _ref10 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee10(req, res, next) {
     var status;
     return _regeneratorRuntime["default"].wrap(function _callee10$(_context10) {
@@ -882,11 +883,13 @@ app.post("/games/addplayers/:userId", /*#__PURE__*/function () {
             _context10.next = 6;
             return User.updateOne({
               id: req.params.userId
-            }, {
+            }, // { $push: { "games.0.players": req.body } }
+            {
               $push: {
-                "games.0.players": req.body
+                "players": req.body
               }
-            });
+            } //add the players into the database
+            );
 
           case 6:
             status = _context10.sent;
