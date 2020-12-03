@@ -69,6 +69,7 @@ const leagueSchema = new Schema({
 const playerSchema = new Schema({
   position: String,
   name: String,
+  starter: Boolean,
 });
 
 const gameSchema = new Schema(
@@ -153,6 +154,7 @@ passport.use(
           displayName: profile.displayName,
           authStrategy: profile.provider,
           profilePicURL: profile.photos[0].value,
+          players: [],
           games: [],
         }).save();
       }
@@ -249,6 +251,7 @@ passport.use(
           displayName: profile.displayName,
           authStrategy: profile.provider,
           profilePicURL: profile.photos[0].value,
+          players: [],
           games: [],
         }).save();
       }

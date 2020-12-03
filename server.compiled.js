@@ -210,6 +210,7 @@ function () {
               displayName: profile.displayName,
               authStrategy: profile.provider,
               profilePicURL: profile.photos[0].value,
+              players: [],
               games: []
             }).save();
 
@@ -373,6 +374,7 @@ function () {
               displayName: profile.displayName,
               authStrategy: profile.provider,
               profilePicURL: profile.photos[0].value,
+              players: [],
               games: []
             }).save();
 
