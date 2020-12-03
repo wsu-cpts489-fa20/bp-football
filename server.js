@@ -240,14 +240,19 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       console.log("User authenticated through Google! In passport callback.");
       //Our convention is to build userId from displayName and provider
-      const userId = `${profile.sub}@${profile.provider}`;
+      const userId = `${profile.emails[0].value}`; 
       //See if document with this unique userId exists in database
+      console.log("userId retreived from GOOGLE: " + userId);
+
       let currentUser = await User.findOne({ id: userId });
+
+      console.log("Current User Found on the database: " + currentUser);
+
       if (!currentUser) {
         //Add this user to the database
         currentUser = await new User({
-          //id: profile.displayName + "@" + profile.provider + ".com",
-          id: profile.emails[0].value,
+          //id: profile.emails[0].value,
+          id: userId,
           displayName: profile.displayName,
           authStrategy: profile.provider,
           profilePicURL: profile.photos[0].value,
@@ -274,6 +279,7 @@ passport.deserializeUser(async (userId, done) => {
   console.log("Contents of userId param: " + userId);
   let thisUser;
   try {
+    console.log("thisUser with userId: " + userId);
     thisUser = await User.findOne({ id: userId });
     console.log(
       "User with id " +

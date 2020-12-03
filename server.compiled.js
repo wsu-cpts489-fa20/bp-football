@@ -353,25 +353,27 @@ function () {
           case 0:
             console.log("User authenticated through Google! In passport callback."); //Our convention is to build userId from displayName and provider
 
-            userId = "".concat(profile.sub, "@").concat(profile.provider); //See if document with this unique userId exists in database
+            userId = "".concat(profile.emails[0].value); //See if document with this unique userId exists in database
 
-            _context3.next = 4;
+            console.log("userId retreived from GOOGLE: " + userId);
+            _context3.next = 5;
             return User.findOne({
               id: userId
             });
 
-          case 4:
+          case 5:
             currentUser = _context3.sent;
+            console.log("Current User Found on the database: " + currentUser);
 
             if (currentUser) {
-              _context3.next = 9;
+              _context3.next = 11;
               break;
             }
 
-            _context3.next = 8;
+            _context3.next = 10;
             return new User({
-              //id: profile.displayName + "@" + profile.provider + ".com",
-              id: profile.emails[0].value,
+              //id: profile.emails[0].value,
+              id: userId,
               displayName: profile.displayName,
               authStrategy: profile.provider,
               profilePicURL: profile.photos[0].value,
@@ -379,13 +381,13 @@ function () {
               games: []
             }).save();
 
-          case 8:
+          case 10:
             currentUser = _context3.sent;
 
-          case 9:
+          case 11:
             return _context3.abrupt("return", done(null, currentUser));
 
-          case 10:
+          case 12:
           case "end":
             return _context3.stop();
         }
@@ -417,29 +419,30 @@ _passport["default"].deserializeUser( /*#__PURE__*/function () {
             console.log("In deserializeUser.");
             console.log("Contents of userId param: " + userId);
             _context4.prev = 2;
-            _context4.next = 5;
+            console.log("thisUser with userId: " + userId);
+            _context4.next = 6;
             return User.findOne({
               id: userId
             });
 
-          case 5:
+          case 6:
             thisUser = _context4.sent;
             console.log("User with id " + userId + " found in DB. User object will be available in server routes as req.user.");
             done(null, thisUser);
-            _context4.next = 13;
+            _context4.next = 14;
             break;
 
-          case 10:
-            _context4.prev = 10;
+          case 11:
+            _context4.prev = 11;
             _context4.t0 = _context4["catch"](2);
             done(_context4.t0);
 
-          case 13:
+          case 14:
           case "end":
             return _context4.stop();
         }
       }
-    }, _callee4, null, [[2, 10]]);
+    }, _callee4, null, [[2, 11]]);
   }));
 
   return function (_x13, _x14) {
@@ -1054,9 +1057,9 @@ app["delete"]("/deleteplayer/:userId/:playername", /*#__PURE__*/function () {
 
             if (status.nModified != 1) {
               //Should never happen!
-              res.status(400).send("Unexpected error occurred when deleting round from database. Round was not deleted.");
+              res.status(400).send("Unexpected error occurred when deleting player from database. Player was not deleted.");
             } else {
-              res.status(200).send("Round successfully deleted from database.");
+              res.status(200).send("specified player successfully deleted from database.");
             }
 
             _context13.next = 12;
@@ -1066,7 +1069,7 @@ app["delete"]("/deleteplayer/:userId/:playername", /*#__PURE__*/function () {
             _context13.prev = 8;
             _context13.t0 = _context13["catch"](1);
             console.log(_context13.t0);
-            return _context13.abrupt("return", res.status(400).send("Unexpected error occurred when deleting round from database: " + _context13.t0));
+            return _context13.abrupt("return", res.status(400).send("Unexpected error occurred when deleting player from database: " + _context13.t0));
 
           case 12:
           case "end":
