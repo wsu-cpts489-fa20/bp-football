@@ -88,7 +88,8 @@ var leagueSchema = new Schema({
 });
 var playerSchema = new Schema({
   position: String,
-  name: String
+  name: String,
+  starter: Boolean
 });
 var gameSchema = new Schema({
   week: {
