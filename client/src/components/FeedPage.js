@@ -1,5 +1,4 @@
 import React from "react";
-// My Teams page, instead of Feed
 class FeedPage extends React.Component {
   constructor(props) {
     super();
@@ -10,8 +9,32 @@ class FeedPage extends React.Component {
     };
     // this.names = [];
     // this.positions = [];
-
   }
+
+  getCurrentData = async() => {
+    var filters = {
+      "players": {
+          "limit": 1500,
+          "sortDraftRanks": {
+              "sortPriority": 100,
+              "sortAsc": true,
+              "value": "STANDARD"
+          }
+      }
+    };
+  
+    var options = {
+        "headers": {
+            "x-fantasy-filter": JSON.stringify(filters)
+        }
+    };
+    
+    const response = await fetch('https://fantasy.espn.com/apis/v3/games/FFL/seasons/2020/segments/0/leaguedefaults/1?view=kona_player_info', options);
+    const data = await response.json();
+    this.setState({name: data
+                 });
+  }
+
 
   populateForm = () => {
     //ToDo: populate selection forms
@@ -37,6 +60,7 @@ class FeedPage extends React.Component {
       players: obj.players,
     });
     // this.populateForm();
+    this.getCurrentData();
   };
 
 
@@ -65,7 +89,6 @@ class FeedPage extends React.Component {
         );
       }
     }
-
     return table;
   };
 

@@ -1054,9 +1054,9 @@ app["delete"]("/deleteplayer/:userId/:playername", /*#__PURE__*/function () {
 
             if (status.nModified != 1) {
               //Should never happen!
-              res.status(400).send("Unexpected error occurred when deleting round from database. Round was not deleted.");
+              res.status(400).send("Unexpected error occurred when deleting player from database. Player was not deleted.");
             } else {
-              res.status(200).send("Round successfully deleted from database.");
+              res.status(200).send("specified player successfully deleted from database.");
             }
 
             _context13.next = 12;
@@ -1066,7 +1066,7 @@ app["delete"]("/deleteplayer/:userId/:playername", /*#__PURE__*/function () {
             _context13.prev = 8;
             _context13.t0 = _context13["catch"](1);
             console.log(_context13.t0);
-            return _context13.abrupt("return", res.status(400).send("Unexpected error occurred when deleting round from database: " + _context13.t0));
+            return _context13.abrupt("return", res.status(400).send("Unexpected error occurred when deleting player from database: " + _context13.t0));
 
           case 12:
           case "end":
