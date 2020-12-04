@@ -46,6 +46,7 @@ class App extends React.Component {
       statusMsg: "",
       showAboutDialog: false,
       showDraftDialog: false,
+      playerData: []
     };
   }
 
@@ -139,6 +140,29 @@ class App extends React.Component {
     this.setState({ statusMsg: "" });
   };
 
+  getCurrentData = async() => {
+    var filters = {
+      "players": {
+          "limit": 1500,
+          "sortDraftRanks": {
+              "sortPriority": 100,
+              "sortAsc": true,
+              "value": "STANDARD"
+          }
+      }
+    };
+  
+    var options = {
+        "headers": {
+            "x-fantasy-filter": JSON.stringify(filters)
+        }
+    };
+    
+    const response = await fetch('https://fantasy.espn.com/apis/v3/games/FFL/seasons/2020/segments/0/leaguedefaults/1?view=kona_player_info', options);
+    const data = await response.json();
+    this.setState({ playerData: data });
+
+  }
   render() {
     const ModePage = modeToPage[this.state.mode];
     return (
@@ -198,6 +222,8 @@ class App extends React.Component {
           changeMode={this.handleChangeMode}
           userObj={this.state.userObj}
           refreshOnUpdate={this.refreshOnUpdate}
+          playerData={this.state.playerData}
+          getCurrentData={this.getCurrentData}
         />
       </div>
     );
