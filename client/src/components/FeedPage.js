@@ -133,6 +133,7 @@ class FeedPage extends React.Component {
             <td>{this.state.playerStats[r][0]}</td>
             <td>{this.state.playerStats[r][1]}</td>
             <td>{this.state.playerStats[r][3]}</td>
+            <td><button><span className="fa fa-eye"></span></button></td>
           </tr>
         );
       }
@@ -147,6 +148,9 @@ class FeedPage extends React.Component {
             <td>{this.state.players[s].name}</td>
             <td>{this.state.players[s].position}</td>
             <td>{this.state.playerStats[s][3]}</td>
+            {/* <td><button onClick={this.props.menuOpen ? null : () => 
+          this.editRound(r)}> */}
+            <td><button><span className="fa fa-eye"></span></button></td>
           </tr>
         );
       }
@@ -168,6 +172,7 @@ class FeedPage extends React.Component {
               <th>Player</th>
               <th>Position</th>
               <th>2020 Season FFP</th>
+              <th>View Player Stats</th>
             </tr>
           </thead>
           <tbody>
