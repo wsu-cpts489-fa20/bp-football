@@ -5,7 +5,9 @@ class FeedPage extends React.Component {
     this.state = {
       players: [],
       names: [],
-      positions: []
+      nflList: [],
+      positions: [],
+      playerName: ""
     };
     // this.names = [];
     // this.positions = [];
@@ -31,8 +33,29 @@ class FeedPage extends React.Component {
     
     const response = await fetch('https://fantasy.espn.com/apis/v3/games/FFL/seasons/2020/segments/0/leaguedefaults/1?view=kona_player_info', options);
     const data = await response.json();
-    this.setState({name: data
-                 });
+    // this.setState({names: data
+    //               //  playerName: data[0].player.fullName
+                   
+    //              });
+    console.log(data);
+    console.log(data.players[0]);
+    console.log(data.players[0].player.stats);
+    console.log(data.players[0].player.stats[0]);
+    console.log("new one" + data.players[0].player.stats[0].stats)
+    console.log(data.players[0].player.stats[0].appliedTotal)
+    // console.log(this.state.playerName);
+    // console.long(data[0].player.fullName);
+    for (let i = 0; i < data.players.length; i++){
+      for (let r = 0; r < this.state.players.length; ++r) {
+        if (data.players[i].player.fullName == this.state.players[r].name) {
+          for (let k = 0; k < data.player[k].player.stats.length; k++){
+            if (data.players[k].player.stats[k].seasonId == 2020 && data.player[k].player.stats[k].scoringPeriod.Id == 0){
+              console.log(data.players[k].player.stats[k].stats.appliedTotal);
+            }
+          }
+        }  
+      }
+    }
   }
 
 
