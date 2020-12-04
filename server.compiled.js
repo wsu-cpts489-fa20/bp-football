@@ -88,7 +88,8 @@ var leagueSchema = new Schema({
 });
 var playerSchema = new Schema({
   position: String,
-  name: String
+  name: String,
+  starter: Boolean
 });
 var gameSchema = new Schema({
   week: {
@@ -301,35 +302,7 @@ function () {
   return function (_x5, _x6, _x7, _x8) {
     return _ref2.apply(this, arguments);
   };
-}())); // const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
-// passport.use(
-//   new GoogleStrategy(
-//     {
-//       clientID: process.env.GG_CLIENT_ID,
-//       clientSecret: process.env.GG_CLIENT_SECRET,
-//       callbackURL: DEPLOY_URL + "/auth/google/callback",
-//     },
-//     async (accessToken, refreshToken, profile, done) => {
-//       console.log("User authenticated through Google! In passport callback.");
-//       //Our convention is to build userId from displayName and provider
-//       const userId = `${profile.sub}@${profile.provider}`;
-//       //See if document with this unique userId exists in database
-//       let currentUser = await User.findOne({ id: userId });
-//       if (!currentUser) {
-//         //Add this user to the database
-//         currentUser = await new User({
-//           id: userId,
-//           displayName: profile.displayName,
-//           authStrategy: profile.provider,
-//           profilePicUrl: profile.photos[0].value,
-//           games: [],
-//         }).save();
-//       }
-//       return done(null, currentUser);
-//     }
-//   )
-// );
-//////////////////////////////////////////////////////////////////////////
+}())); //////////////////////////////////////////////////////////////////////////
 //PASSPORT SET-UP
 //The following code sets up the app with OAuth authentication using
 //the 'google' strategy in passport.js.
@@ -352,25 +325,27 @@ function () {
           case 0:
             console.log("User authenticated through Google! In passport callback."); //Our convention is to build userId from displayName and provider
 
-            userId = "".concat(profile.sub, "@").concat(profile.provider); //See if document with this unique userId exists in database
+            userId = "".concat(profile.emails[0].value); //See if document with this unique userId exists in database
 
-            _context3.next = 4;
+            console.log("userId retreived from GOOGLE: " + userId);
+            _context3.next = 5;
             return User.findOne({
               id: userId
             });
 
-          case 4:
+          case 5:
             currentUser = _context3.sent;
+            console.log("Current User Found on the database: " + currentUser);
 
             if (currentUser) {
-              _context3.next = 9;
+              _context3.next = 11;
               break;
             }
 
-            _context3.next = 8;
+            _context3.next = 10;
             return new User({
-              //id: profile.displayName + "@" + profile.provider + ".com",
-              id: profile.emails[0].value,
+              //id: profile.emails[0].value,
+              id: userId,
               displayName: profile.displayName,
               authStrategy: profile.provider,
               profilePicURL: profile.photos[0].value,
@@ -378,13 +353,13 @@ function () {
               games: []
             }).save();
 
-          case 8:
+          case 10:
             currentUser = _context3.sent;
 
-          case 9:
+          case 11:
             return _context3.abrupt("return", done(null, currentUser));
 
-          case 10:
+          case 12:
           case "end":
             return _context3.stop();
         }
@@ -399,8 +374,8 @@ function () {
 
 
 _passport["default"].serializeUser(function (user, done) {
-  console.log("In serializeUser.");
-  console.log("Contents of user param: " + JSON.stringify(user));
+  console.log("In serializeUser."); //console.log("Contents of user param: " + JSON.stringify(user));
+
   done(null, user.id);
 }); //Deserialize the current user from the session
 //to persistent storage.
@@ -416,29 +391,30 @@ _passport["default"].deserializeUser( /*#__PURE__*/function () {
             console.log("In deserializeUser.");
             console.log("Contents of userId param: " + userId);
             _context4.prev = 2;
-            _context4.next = 5;
+            console.log("thisUser with userId: " + userId);
+            _context4.next = 6;
             return User.findOne({
               id: userId
             });
 
-          case 5:
+          case 6:
             thisUser = _context4.sent;
             console.log("User with id " + userId + " found in DB. User object will be available in server routes as req.user.");
             done(null, thisUser);
-            _context4.next = 13;
+            _context4.next = 14;
             break;
 
-          case 10:
-            _context4.prev = 10;
+          case 11:
+            _context4.prev = 11;
             _context4.t0 = _context4["catch"](2);
             done(_context4.t0);
 
-          case 13:
+          case 14:
           case "end":
             return _context4.stop();
         }
       }
-    }, _callee4, null, [[2, 10]]);
+    }, _callee4, null, [[2, 11]]);
   }));
 
   return function (_x13, _x14) {
@@ -864,7 +840,7 @@ app.post("/games/:userId", /*#__PURE__*/function () {
 }()); //CREATE Players route: Adds a new NFL players collection to the user's
 //database - POST request with all the inputs
 
-app.post("/games/addplayers/:userId", /*#__PURE__*/function () {
+app.post("/addplayers/:userId", /*#__PURE__*/function () {
   var _ref10 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee10(req, res, next) {
     var status;
     return _regeneratorRuntime["default"].wrap(function _callee10$(_context10) {
@@ -873,7 +849,7 @@ app.post("/games/addplayers/:userId", /*#__PURE__*/function () {
           case 0:
             console.log("in /games/players (POST) route with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
 
-            if (!(!req.body.hasOwnProperty("name") || !req.body.hasOwnProperty("position"))) {
+            if (!(!req.body.hasOwnProperty("name") || !req.body.hasOwnProperty("position") || !req.body.hasOwnProperty("starter"))) {
               _context10.next = 3;
               break;
             }
@@ -885,11 +861,13 @@ app.post("/games/addplayers/:userId", /*#__PURE__*/function () {
             _context10.next = 6;
             return User.updateOne({
               id: req.params.userId
-            }, {
+            }, // { $push: { "games.0.players": req.body } }
+            {
               $push: {
-                "games.0.players": req.body
+                "players": req.body
               }
-            });
+            } //add the players into the database
+            );
 
           case 6:
             status = _context10.sent;
@@ -924,7 +902,7 @@ app.post("/games/addplayers/:userId", /*#__PURE__*/function () {
 }()); //READ players route: Returns all players associated
 //with a given user in the users collection (GET)
 
-app.get("/games/addplayers/:userId", /*#__PURE__*/function () {
+app.get("/getplayers/:userId", /*#__PURE__*/function () {
   var _ref11 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee11(req, res) {
     var thisUser;
     return _regeneratorRuntime["default"].wrap(function _callee11$(_context11) {
@@ -949,7 +927,7 @@ app.get("/games/addplayers/:userId", /*#__PURE__*/function () {
             return _context11.abrupt("return", res.status(400).message("No user account with specified userId was found in database."));
 
           case 9:
-            return _context11.abrupt("return", res.status(200).json(JSON.stringify(thisUser.games[0].players)));
+            return _context11.abrupt("return", res.status(200).json(JSON.stringify(thisUser.players)));
 
           case 10:
             _context11.next = 16;
@@ -1023,15 +1001,68 @@ app.get("/games/:userId", /*#__PURE__*/function () {
   return function (_x35, _x36) {
     return _ref12.apply(this, arguments);
   };
+}()); //DELETE round route: Deletes a specific round
+//for a given user in the users collection (DELETE)
+
+app["delete"]("/deleteplayer/:userId/:playername", /*#__PURE__*/function () {
+  var _ref13 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee13(req, res, next) {
+    var status;
+    return _regeneratorRuntime["default"].wrap(function _callee13$(_context13) {
+      while (1) {
+        switch (_context13.prev = _context13.next) {
+          case 0:
+            console.log("in /players (DELETE) route with params = " + JSON.stringify(req.params));
+            _context13.prev = 1;
+            _context13.next = 4;
+            return User.updateOne({
+              id: req.params.userId
+            }, {
+              $pull: {
+                players: {
+                  name: req.params.playername
+                }
+              }
+            });
+
+          case 4:
+            status = _context13.sent;
+
+            if (status.nModified != 1) {
+              //Should never happen!
+              res.status(400).send("Unexpected error occurred when deleting player from database. Player was not deleted.");
+            } else {
+              res.status(200).send("specified player successfully deleted from database.");
+            }
+
+            _context13.next = 12;
+            break;
+
+          case 8:
+            _context13.prev = 8;
+            _context13.t0 = _context13["catch"](1);
+            console.log(_context13.t0);
+            return _context13.abrupt("return", res.status(400).send("Unexpected error occurred when deleting player from database: " + _context13.t0));
+
+          case 12:
+          case "end":
+            return _context13.stop();
+        }
+      }
+    }, _callee13, null, [[1, 8]]);
+  }));
+
+  return function (_x37, _x38, _x39) {
+    return _ref13.apply(this, arguments);
+  };
 }()); //UPDATE round route: Updates a specific round
 //for a given user in the users collection (PUT)
 
 app.put("/games/:userId/:gameId", /*#__PURE__*/function () {
-  var _ref13 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee13(req, res, next) {
+  var _ref14 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee14(req, res, next) {
     var validProps, bodyObj, bodyProp, status;
-    return _regeneratorRuntime["default"].wrap(function _callee13$(_context13) {
+    return _regeneratorRuntime["default"].wrap(function _callee14$(_context14) {
       while (1) {
-        switch (_context13.prev = _context13.next) {
+        switch (_context14.prev = _context14.next) {
           case 0:
             console.log("in /games (PUT) route with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
             validProps = ["week", "score", "opponentScore", "win", "loss"];
@@ -1040,34 +1071,34 @@ app.put("/games/:userId/:gameId", /*#__PURE__*/function () {
 
             delete bodyObj.SGS; //We'll compute this below in seconds.
 
-            _context13.t0 = _regeneratorRuntime["default"].keys(bodyObj);
+            _context14.t0 = _regeneratorRuntime["default"].keys(bodyObj);
 
           case 6:
-            if ((_context13.t1 = _context13.t0()).done) {
-              _context13.next = 16;
+            if ((_context14.t1 = _context14.t0()).done) {
+              _context14.next = 16;
               break;
             }
 
-            bodyProp = _context13.t1.value;
+            bodyProp = _context14.t1.value;
 
             if (validProps.includes(bodyProp)) {
-              _context13.next = 12;
+              _context14.next = 12;
               break;
             }
 
-            return _context13.abrupt("return", res.status(400).send("games/ PUT request formulated incorrectly." + "It includes " + bodyProp + ". However, only the following props are allowed: " + "'week', 'score', 'opponentScore', 'win', 'loss', "));
+            return _context14.abrupt("return", res.status(400).send("games/ PUT request formulated incorrectly." + "It includes " + bodyProp + ". However, only the following props are allowed: " + "'week', 'score', 'opponentScore', 'win', 'loss', "));
 
           case 12:
             bodyObj["games.$." + bodyProp] = bodyObj[bodyProp];
             delete bodyObj[bodyProp];
 
           case 14:
-            _context13.next = 6;
+            _context14.next = 6;
             break;
 
           case 16:
-            _context13.prev = 16;
-            _context13.next = 19;
+            _context14.prev = 16;
+            _context14.next = 19;
             return User.updateOne({
               id: req.params.userId,
               "games._id": _mongoose["default"].Types.ObjectId(req.params.roundId)
@@ -1076,7 +1107,7 @@ app.put("/games/:userId/:gameId", /*#__PURE__*/function () {
             });
 
           case 19:
-            status = _context13.sent;
+            status = _context14.sent;
 
             if (status.nModified != 1) {
               res.status(400).send("Unexpected error occurred when updating games in database. Game was not updated.");
@@ -1084,25 +1115,25 @@ app.put("/games/:userId/:gameId", /*#__PURE__*/function () {
               res.status(200).send("Game successfully updated in database.");
             }
 
-            _context13.next = 27;
+            _context14.next = 27;
             break;
 
           case 23:
-            _context13.prev = 23;
-            _context13.t2 = _context13["catch"](16);
-            console.log(_context13.t2);
-            return _context13.abrupt("return", res.status(400).send("Unexpected error occurred when updating game in database: " + _context13.t2));
+            _context14.prev = 23;
+            _context14.t2 = _context14["catch"](16);
+            console.log(_context14.t2);
+            return _context14.abrupt("return", res.status(400).send("Unexpected error occurred when updating game in database: " + _context14.t2));
 
           case 27:
           case "end":
-            return _context13.stop();
+            return _context14.stop();
         }
       }
-    }, _callee13, null, [[16, 23]]);
+    }, _callee14, null, [[16, 23]]);
   }));
 
-  return function (_x37, _x38, _x39) {
-    return _ref13.apply(this, arguments);
+  return function (_x40, _x41, _x42) {
+    return _ref14.apply(this, arguments);
   };
 }()); //DELETE round route: Deletes a specific round
 //for a given user in the users collection (DELETE)
@@ -1140,24 +1171,24 @@ app.put("/games/:userId/:gameId", /*#__PURE__*/function () {
 //a document in the users collection (POST)
 
 app.post("/players/:userId", /*#__PURE__*/function () {
-  var _ref14 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee14(req, res, next) {
+  var _ref15 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee15(req, res, next) {
     var status;
-    return _regeneratorRuntime["default"].wrap(function _callee14$(_context14) {
+    return _regeneratorRuntime["default"].wrap(function _callee15$(_context15) {
       while (1) {
-        switch (_context14.prev = _context14.next) {
+        switch (_context15.prev = _context15.next) {
           case 0:
             console.log("in /players (POST) route with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
 
             if (req.body.hasOwnProperty("players")) {
-              _context14.next = 3;
+              _context15.next = 3;
               break;
             }
 
-            return _context14.abrupt("return", res.status(400).send("POST request on /games formulated incorrectly." + "Body must contain the required fields: players."));
+            return _context15.abrupt("return", res.status(400).send("POST request on /games formulated incorrectly." + "Body must contain the required fields: players."));
 
           case 3:
-            _context14.prev = 3;
-            _context14.next = 6;
+            _context15.prev = 3;
+            _context15.next = 6;
             return User.updateOne({
               id: req.params.userId
             }, {
@@ -1167,7 +1198,7 @@ app.post("/players/:userId", /*#__PURE__*/function () {
             });
 
           case 6:
-            status = _context14.sent;
+            status = _context15.sent;
 
             if (status.nModified != 1) {
               //Should never happen!
@@ -1176,24 +1207,24 @@ app.post("/players/:userId", /*#__PURE__*/function () {
               res.status(200).send("Players successfully added to database.");
             }
 
-            _context14.next = 14;
+            _context15.next = 14;
             break;
 
           case 10:
-            _context14.prev = 10;
-            _context14.t0 = _context14["catch"](3);
-            console.log(_context14.t0);
-            return _context14.abrupt("return", res.status(400).send("Unexpected error occurred when adding players" + " to database: " + _context14.t0));
+            _context15.prev = 10;
+            _context15.t0 = _context15["catch"](3);
+            console.log(_context15.t0);
+            return _context15.abrupt("return", res.status(400).send("Unexpected error occurred when adding players" + " to database: " + _context15.t0));
 
           case 14:
           case "end":
-            return _context14.stop();
+            return _context15.stop();
         }
       }
-    }, _callee14, null, [[3, 10]]);
+    }, _callee15, null, [[3, 10]]);
   }));
 
-  return function (_x40, _x41, _x42) {
-    return _ref14.apply(this, arguments);
+  return function (_x43, _x44, _x45) {
+    return _ref15.apply(this, arguments);
   };
 }());

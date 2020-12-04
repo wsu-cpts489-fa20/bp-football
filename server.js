@@ -195,35 +195,6 @@ passport.use(
   )
 );
 
-// const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
-// passport.use(
-//   new GoogleStrategy(
-//     {
-//       clientID: process.env.GG_CLIENT_ID,
-//       clientSecret: process.env.GG_CLIENT_SECRET,
-//       callbackURL: DEPLOY_URL + "/auth/google/callback",
-//     },
-//     async (accessToken, refreshToken, profile, done) => {
-//       console.log("User authenticated through Google! In passport callback.");
-//       //Our convention is to build userId from displayName and provider
-//       const userId = `${profile.sub}@${profile.provider}`;
-//       //See if document with this unique userId exists in database
-//       let currentUser = await User.findOne({ id: userId });
-//       if (!currentUser) {
-//         //Add this user to the database
-//         currentUser = await new User({
-//           id: userId,
-//           displayName: profile.displayName,
-//           authStrategy: profile.provider,
-//           profilePicUrl: profile.photos[0].value,
-//           games: [],
-//         }).save();
-//       }
-//       return done(null, currentUser);
-//     }
-//   )
-// );
-
 //////////////////////////////////////////////////////////////////////////
 //PASSPORT SET-UP
 //The following code sets up the app with OAuth authentication using
@@ -240,14 +211,19 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       console.log("User authenticated through Google! In passport callback.");
       //Our convention is to build userId from displayName and provider
-      const userId = `${profile.sub}@${profile.provider}`;
+      const userId = `${profile.emails[0].value}`; 
       //See if document with this unique userId exists in database
+      console.log("userId retreived from GOOGLE: " + userId);
+
       let currentUser = await User.findOne({ id: userId });
+
+      console.log("Current User Found on the database: " + currentUser);
+
       if (!currentUser) {
         //Add this user to the database
         currentUser = await new User({
-          //id: profile.displayName + "@" + profile.provider + ".com",
-          id: profile.emails[0].value,
+          //id: profile.emails[0].value,
+          id: userId,
           displayName: profile.displayName,
           authStrategy: profile.provider,
           profilePicURL: profile.photos[0].value,
@@ -264,7 +240,7 @@ passport.use(
 //Serialize the current user to the session
 passport.serializeUser((user, done) => {
   console.log("In serializeUser.");
-  console.log("Contents of user param: " + JSON.stringify(user));
+  //console.log("Contents of user param: " + JSON.stringify(user));
   done(null, user.id);
 });
 
@@ -275,6 +251,7 @@ passport.deserializeUser(async (userId, done) => {
   console.log("Contents of userId param: " + userId);
   let thisUser;
   try {
+    console.log("thisUser with userId: " + userId);
     thisUser = await User.findOne({ id: userId });
     console.log(
       "User with id " +
@@ -663,7 +640,7 @@ app.post("/games/:userId", async (req, res, next) => {
 
 //CREATE Players route: Adds a new NFL players collection to the user's
 //database - POST request with all the inputs
-app.post("/games/addplayers/:userId", async (req, res, next) => {
+app.post("/addplayers/:userId", async (req, res, next) => {
   console.log(
     "in /games/players (POST) route with params = " +
       JSON.stringify(req.params) +
@@ -672,7 +649,8 @@ app.post("/games/addplayers/:userId", async (req, res, next) => {
   );
   if (
     !req.body.hasOwnProperty("name") ||
-    !req.body.hasOwnProperty("position")
+    !req.body.hasOwnProperty("position") ||
+    !req.body.hasOwnProperty("starter")
   ) {
     //Body does not contain correct properties
     return res
@@ -685,7 +663,8 @@ app.post("/games/addplayers/:userId", async (req, res, next) => {
   try {
     let status = await User.updateOne(
       { id: req.params.userId },
-      { $push: { "games.0.players": req.body } }
+      // { $push: { "games.0.players": req.body } }
+      { $push: { "players": req.body } } //add the players into the database
     );
     if (status.nModified != 1) {
       //Should never happen!
@@ -710,7 +689,7 @@ app.post("/games/addplayers/:userId", async (req, res, next) => {
 
 //READ players route: Returns all players associated
 //with a given user in the users collection (GET)
-app.get("/games/addplayers/:userId", async (req, res) => {
+app.get("/getplayers/:userId", async (req, res) => {
   console.log(
     "in /games/players route (GET) with userId = " +
       JSON.stringify(req.params.userId)
@@ -724,7 +703,7 @@ app.get("/games/addplayers/:userId", async (req, res) => {
           "No user account with specified userId was found in database."
         );
     } else {
-      return res.status(200).json(JSON.stringify(thisUser.games[0].players));
+      return res.status(200).json(JSON.stringify(thisUser.players));
     }
   } catch (err) {
     console.log();
@@ -759,6 +738,39 @@ app.get("/games/:userId", async (req, res) => {
       .status(400)
       .message(
         "Unexpected error occurred when looking up user in database: " + err
+      );
+  }
+});
+
+//DELETE round route: Deletes a specific round
+//for a given user in the users collection (DELETE)
+app.delete("/deleteplayer/:userId/:playername", async (req, res, next) => {
+  console.log(
+    "in /players (DELETE) route with params = " + JSON.stringify(req.params)
+  );
+  try {
+    let status = await User.updateOne(
+      { id: req.params.userId },
+      {
+        $pull: { players: { name: (req.params.playername) } },
+      }
+    );
+    if (status.nModified != 1) {
+      //Should never happen!
+      res
+        .status(400)
+        .send(
+          "Unexpected error occurred when deleting player from database. Player was not deleted."
+        );
+    } else {
+      res.status(200).send("specified player successfully deleted from database.");
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when deleting player from database: " + err
       );
   }
 });

@@ -1,6 +1,5 @@
 import React from "react";
 import ConfirmDeleteAccount from "./ConfirmDeleteAccount.js";
-import confirmDeleteAccount from "./ConfirmDeleteAccount.js";
 
 class CreateEditAccountDialog extends React.Component {
   constructor(props) {
@@ -36,6 +35,7 @@ class CreateEditAccountDialog extends React.Component {
       const res = await fetch(url);
       const json = await res.json();
       const userData = JSON.parse(json);
+      console.log(userData);
       this.origAccountInfo = userData; //This determines whether update can occur
       this.origAccountInfo.passwordRepeat = userData.password;
       this.setState({
