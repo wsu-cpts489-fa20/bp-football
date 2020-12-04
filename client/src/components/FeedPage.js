@@ -3,6 +3,7 @@ class FeedPage extends React.Component {
   constructor(props) {
     super();
     this.state = {
+      data: [],
       players: [],
       names: [],
       nflList: [],
@@ -13,26 +14,28 @@ class FeedPage extends React.Component {
     };
   }
 
-  getCurrentData = async() => {
-    var filters = {
-      "players": {
-          "limit": 1500,
-          "sortDraftRanks": {
-              "sortPriority": 100,
-              "sortAsc": true,
-              "value": "STANDARD"
-          }
-      }
-    };
+  // getCurrentData = async() => {
+  //   var filters = {
+  //     "players": {
+  //         "limit": 1500,
+  //         "sortDraftRanks": {
+  //             "sortPriority": 100,
+  //             "sortAsc": true,
+  //             "value": "STANDARD"
+  //         }
+  //     }
+  //   };
   
-    var options = {
-        "headers": {
-            "x-fantasy-filter": JSON.stringify(filters)
-        }
-    };
+  //   var options = {
+  //       "headers": {
+  //           "x-fantasy-filter": JSON.stringify(filters)
+  //       }
+  //   };
     
-    const response = await fetch('https://fantasy.espn.com/apis/v3/games/FFL/seasons/2020/segments/0/leaguedefaults/1?view=kona_player_info', options);
-    const data = await response.json();
+  //   const response = await fetch('https://fantasy.espn.com/apis/v3/games/FFL/seasons/2020/segments/0/leaguedefaults/1?view=kona_player_info', options);
+  //   const d = await response.json();
+  //   this.setState({ data: d });
+
     // console.log(data);
     // console.log(data.players[0]);
     // console.log(data.players[0].player.stats);
@@ -41,20 +44,50 @@ class FeedPage extends React.Component {
     // console.log(data.players[0].player.stats[0].appliedTotal)
     // console.log(this.state.playerName);
     // console.long(data[0].player.fullName);
-    for (let i = 0; i < data.players.length; i++){
+    // for (let i = 0; i < data.players.length; i++){
+    //   for (let r = 0; r < this.state.players.length; ++r) {
+    //     if (data.players[i].player.fullName == this.state.players[r].name) {
+    //       for (let k = 0; k < data.players[i].player.stats.length; k++){
+    //         // console.log("statSource: " + data.players[i].player.stats[k].statSourceId + "StatSplit: " + data.players[i].player.stats[k].statSplitTypeId)
+    //         if (data.players[i].player.stats[k].seasonId == 2020 && data.players[i].player.stats[k].scoringPeriodId == 0 
+    //             && data.players[i].player.stats[k].statSourceId == 0 && data.players[i].player.stats[k].statSplitTypeId == 0){
+    //           console.log(this.state.players[r].name + " Week " + data.players[i].player.stats[k].scoringPeriodId)
+    //           console.log(data.players[i].player.stats[k].appliedTotal);
+    //           let temp = [];
+    //           temp.push(this.state.players[r].name);
+    //           temp.push(this.state.players[r].position);
+    //           temp.push(this.state.players[r].starter);
+    //           temp.push(data.players[i].player.stats[k].appliedTotal);
+    //           this.state.playerStats.push(temp);
+    //           console.log(this.state.playerStats[0][0]);
+    //           console.log(this.state.playerStats[0][1]);
+    //         }
+    //       }
+    //     }  
+    //   }
+    // }
+
+    // this.confirmRender();
+    // return this.renderTable()
+  // }
+
+  getFFP = () => {
+    this.props.getCurrentData();
+
+    for (let i = 0; i < this.props.playerData.players.length; i++){
       for (let r = 0; r < this.state.players.length; ++r) {
-        if (data.players[i].player.fullName == this.state.players[r].name) {
-          for (let k = 0; k < data.players[i].player.stats.length; k++){
+        if (this.props.playerData.players[i].player.fullName == this.state.players[r].name) {
+          for (let k = 0; k < this.props.playerData.players[i].player.stats.length; k++){
             // console.log("statSource: " + data.players[i].player.stats[k].statSourceId + "StatSplit: " + data.players[i].player.stats[k].statSplitTypeId)
-            if (data.players[i].player.stats[k].seasonId == 2020 && data.players[i].player.stats[k].scoringPeriodId == 0 
-                && data.players[i].player.stats[k].statSourceId == 0 && data.players[i].player.stats[k].statSplitTypeId == 0){
-              console.log(this.state.players[r].name + " Week " + data.players[i].player.stats[k].scoringPeriodId)
-              console.log(data.players[i].player.stats[k].appliedTotal);
+            if (this.props.playerData.players[i].player.stats[k].seasonId == 2020 && this.props.playerData.players[i].player.stats[k].scoringPeriodId == 0 
+                && this.props.playerData.players[i].player.stats[k].statSourceId == 0 && this.props.playerData.players[i].player.stats[k].statSplitTypeId == 0){
+              console.log(this.state.players[r].name + " Week " + this.props.playerData.players[i].player.stats[k].scoringPeriodId)
+              console.log(this.props.playerData.players[i].player.stats[k].appliedTotal);
               let temp = [];
               temp.push(this.state.players[r].name);
               temp.push(this.state.players[r].position);
               temp.push(this.state.players[r].starter);
-              temp.push(data.players[i].player.stats[k].appliedTotal);
+              temp.push(this.props.playerData.players[i].player.stats[k].appliedTotal);
               this.state.playerStats.push(temp);
               console.log(this.state.playerStats[0][0]);
               console.log(this.state.playerStats[0][1]);
@@ -65,9 +98,8 @@ class FeedPage extends React.Component {
     }
 
     this.confirmRender();
-    // return this.renderTable()
-  }
 
+  }
   confirmRender = () => {
     this.setState({ showRender: true });
   };
@@ -96,7 +128,9 @@ class FeedPage extends React.Component {
       players: obj.players,
     });
     // this.populateForm();
-    this.getCurrentData();
+    // this.getCurrentData();
+    // this.props.getCurrentData();
+    this.getFFP();
   };
 
 
