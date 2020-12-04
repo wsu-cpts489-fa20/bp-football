@@ -195,35 +195,6 @@ passport.use(
   )
 );
 
-// const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
-// passport.use(
-//   new GoogleStrategy(
-//     {
-//       clientID: process.env.GG_CLIENT_ID,
-//       clientSecret: process.env.GG_CLIENT_SECRET,
-//       callbackURL: DEPLOY_URL + "/auth/google/callback",
-//     },
-//     async (accessToken, refreshToken, profile, done) => {
-//       console.log("User authenticated through Google! In passport callback.");
-//       //Our convention is to build userId from displayName and provider
-//       const userId = `${profile.sub}@${profile.provider}`;
-//       //See if document with this unique userId exists in database
-//       let currentUser = await User.findOne({ id: userId });
-//       if (!currentUser) {
-//         //Add this user to the database
-//         currentUser = await new User({
-//           id: userId,
-//           displayName: profile.displayName,
-//           authStrategy: profile.provider,
-//           profilePicUrl: profile.photos[0].value,
-//           games: [],
-//         }).save();
-//       }
-//       return done(null, currentUser);
-//     }
-//   )
-// );
-
 //////////////////////////////////////////////////////////////////////////
 //PASSPORT SET-UP
 //The following code sets up the app with OAuth authentication using
@@ -268,7 +239,7 @@ passport.use(
 //Serialize the current user to the session
 passport.serializeUser((user, done) => {
   console.log("In serializeUser.");
-  console.log("Contents of user param: " + JSON.stringify(user));
+  //console.log("Contents of user param: " + JSON.stringify(user));
   done(null, user.id);
 });
 
