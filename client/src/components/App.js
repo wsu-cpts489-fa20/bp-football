@@ -8,7 +8,7 @@ import AppMode from "./../AppMode.js";
 import FeedPage from "./FeedPage.js";
 import Rounds from "./Rounds.js";
 import CoursesPage from "./CoursesPage.js";
-import Profile from "./Profile";
+import Profile from "./ProfilePage";
 import AboutBox from "./AboutBox.js";
 import Draft from "./Draft.js";
 
