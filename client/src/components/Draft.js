@@ -7,7 +7,7 @@ class DraftPage extends React.Component {
     this.fileInfo = [];
     this.leagueName = "";
     this.state = {
-            playersData: []
+      playersData: [],
     };
   }
 
@@ -16,12 +16,12 @@ class DraftPage extends React.Component {
     console.log(info);
     this.parsedata = data;
 
-    this.setState({playersData: data});
+    this.setState({ playersData: data });
 
     this.fileInfo = info;
   };
 
-  addPlayers = async (newData) => {
+  /* addPlayers = async (newData) => {
     const url = '/games/addplayers/' + this.props.userObj.id;
     const res = await fetch(url, {
         method: 'POST',
@@ -34,8 +34,7 @@ class DraftPage extends React.Component {
         this.setState({errorMsg: ""});
         //this.props.refreshOnUpdate(AppMode.ROUNDS);
     }
-  }
-
+  } */
 
   render() {
     return (
@@ -49,52 +48,52 @@ class DraftPage extends React.Component {
           &times;
         </button> */}
         {/* <center> */}
-          {/* <form className="padded-page" onSubmit={this.handleSubmit}> */}
-            <center>
-              <label>
-                League Name:
-                <input
-                  name="leagueName"
-                  id="leagueName"
-                  className="form-control form-center"
-                  type="text"
-                  onChange={this.handleChange}
-                  placeholder="League Name"
-                  value={this.leagueName}
-                  size="50"
-                  maxLength="50"
-                />
-              </label>
-              <p></p>
-              <label>
-                Format:
-                <select
-                  name="format"
-                  id="leagueFormat"
-                  className="form-control form-center"
-                  onChange={this.handleChange}
-                >
-                  <option value="full">Full PPR</option>
-                  <option value="half">Half PPR</option>
-                </select>
-              </label>
-              <p></p>
-              <CSVReader
-                onFileLoaded={(data, fileInfo) => this.parseOptions(data, fileInfo)}
-              />   
-              <br></br>           
-              <button
-                type="submit" 
-                id="SubmitTeamBtn"
-                onClick={this.addPlayers(this.state.playersData)}
-                // style={{ width: "70%", fontSize: "36px" }}
-                className="btn-color-theme btn btn-primary btn-block login-btn">
-                <span id="draft-btn-icon"/>
-                &nbsp;Submit Team
-
-                </button>
-            </center>
-          {/* </form> */}
+        {/* <form className="padded-page" onSubmit={this.handleSubmit}> */}
+        <center>
+          <label>
+            League Name:
+            <input
+              name="leagueName"
+              id="leagueName"
+              className="form-control form-center"
+              type="text"
+              onChange={this.handleChange}
+              placeholder="League Name"
+              value={this.leagueName}
+              size="50"
+              maxLength="50"
+            />
+          </label>
+          <p></p>
+          <label>
+            Format:
+            <select
+              name="format"
+              id="leagueFormat"
+              className="form-control form-center"
+              onChange={this.handleChange}
+            >
+              <option value="full">Full PPR</option>
+              <option value="half">Half PPR</option>
+            </select>
+          </label>
+          <p></p>
+          <CSVReader
+            onFileLoaded={(data, fileInfo) => this.parseOptions(data, fileInfo)}
+          />
+          <br></br>
+          <button
+            type="submit"
+            id="SubmitTeamBtn"
+            onClick={this.addPlayers(this.state.playersData)}
+            // style={{ width: "70%", fontSize: "36px" }}
+            className="btn-color-theme btn btn-primary btn-block login-btn"
+          >
+            <span id="draft-btn-icon" />
+            &nbsp;Submit Team
+          </button>
+        </center>
+        {/* </form> */}
         {/* </center> */}
       </div>
     );

@@ -97,7 +97,7 @@ const achievementSchema = new Schema({
   description: String,
   icon: String,
 });
-
+const Achievement = mongoose.model("Achievement", achievementSchema);
 //Define schema that maps to a document in the Users collection in the appdb
 //database.
 const userSchema = new Schema({
@@ -229,6 +229,7 @@ passport.use(
           profilePicURL: profile.photos[0].value,
           players: [],
           games: [],
+          achievements: [],
         }).save();
       }
       return done(null, currentUser);
@@ -460,6 +461,8 @@ app.post("/users/:userId", async (req, res, next) => {
         phoneNumber: req.body.phoneNumber,
         teamName: req.body.teamName,
         leagueId: req.body.leagueId,
+        players: [],
+        achievements: [],
         games: [],
       }).save();
       return res
