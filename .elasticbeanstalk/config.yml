@@ -1,7 +1,12 @@
 branch-defaults:
+  development:
+    environment: FantasyFootball-env
   master:
     environment: FantasyFootball-env
 environment-defaults:
+  FantasyFootball-env:
+    branch: development
+    repository: bp-football
   SpeedgolfMern-env:
     branch: null
     repository: null
