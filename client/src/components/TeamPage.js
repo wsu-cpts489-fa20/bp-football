@@ -121,9 +121,6 @@ class FeedPage extends React.Component {
   };
 
   populateForm = () => {
-    //ToDo: populate selection forms
-    // sort by position
-    //have starters be the initial value
     for (let r = 0; r < this.state.players.length; ++r) {
       if (this.state.players[r].name != null) {
         this.state.names[r] = this.state.players[r].name;
