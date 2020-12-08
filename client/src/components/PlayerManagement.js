@@ -22,17 +22,11 @@ class DraftPage extends React.Component {
   };
 
   componentDidMount = async () => {
-    // let response = await fetch("/league/" + this.props.userObj.id);
-    // response = await response.json();
-    // const obj = JSON.parse(response);
-    // console.log(obj.players);
-    // this.setState({
-    //   players: obj.players,
-    // });
+    //
   };
 
   addPlayers = async (newData) => {
-    /* const url = "/games/addplayers/" + this.props.userObj.id;
+    /* const url = "/games/user/" + this.props.userObj.id;
     const res = await fetch(url, {
       method: "POST",
       body: JSON.stringify(newData),
