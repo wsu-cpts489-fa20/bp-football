@@ -62,9 +62,10 @@ const Schema = mongoose.Schema;
 
 const leagueSchema = new Schema({
   leagueName: { type: String, required: true },
-  userIds: [String],
-  leagueId: { type: String, required: true },
+  userIds: [userSchema],
+  leagueId: String,
 });
+const League = mongoose.model("League", leagueSchema);
 
 const playerSchema = new Schema({
   position: String,
@@ -120,7 +121,6 @@ const userSchema = new Schema({
       return this.securityQuestion ? true : false;
     },
   },
-  players: [playerSchema],
   games: [gameSchema],
   team: [playerSchema],
   league: [leagueSchema],
@@ -383,7 +383,72 @@ app.post(
 //LEAGUE MANAGEMENT ROUTES
 ////////////////////////////////
 
-//app.get("/league/:leagueId...")
+app.get("/leagues/:leagueName", async (req, res, next) => {
+  console.log(
+    "in /league route (GET) with leagueName = " +
+      JSON.stringify(req.params.leagueName)
+  );
+  try {
+    let thisLeague = await League.findOne({
+      leagueName: req.params.leagueName,
+    });
+    if (!thisLeague) {
+      return res
+        .status(404)
+        .send(
+          "No user account with id " +
+            req.params.userId +
+            " was found in database."
+        );
+    } else {
+      return res.status(200).json(JSON.stringify(thisLeague));
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when looking up league with name " +
+          req.params.leagueName +
+          " in database: " +
+          err
+      );
+  }
+});
+
+app.post("/leagues/:leagueName", async (req, res, next) => {
+  console.log(
+    "in /league route (POST) with params = " +
+      JSON.stringify(req.params) +
+      " and body = " +
+      JSON.stringify(req.body)
+  );
+  try {
+    let thisLeague = await League.findOne({
+      leagueName: req.params.leagueName,
+    });
+    if (!thisLeague) {
+      return res
+        .status(404)
+        .send(
+          "No league with name " + req.params.userId + " was found in database."
+        );
+    } else {
+      thisLeague = await new League({
+        leagueName: req.params.leagueName,
+        leagueId: req.body.leagueId,
+        players: [req.body.user],
+      });
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when adding or looking up league." + err
+      );
+  }
+});
 
 /////////////////////////////////
 //USER ACCOUNT MANAGEMENT ROUTES
