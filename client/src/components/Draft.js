@@ -1,5 +1,6 @@
 import React from "react";
 import CSVReader from "react-csv-reader";
+import PlayerManagement from "./PlayerManagement";
 class DraftPage extends React.Component {
   constructor(props) {
     super(props);
@@ -8,18 +9,13 @@ class DraftPage extends React.Component {
     this.leagueName = "";
     this.state = {
       playersData: [],
+      showGoToLeauge: false
     };
   }
 
-  parseOptions = (data, info) => {
-    console.log(data);
-    console.log(info);
-    this.parsedata = data;
-
-    this.setState({ playersData: data });
-
-    this.fileInfo = info;
-  };
+  goToLeauge = () => {
+    this.setState({ showGoToLeauge: true });
+  }
 
   componentDidMount = async () => {
     // let response = await fetch("/league/" + this.props.userObj.id);
@@ -93,10 +89,38 @@ class DraftPage extends React.Component {
   };
 
   render() {
-    return {
-      /*this.rendertable*/
-    };
+    return (
+      <div className="padded-page">
+        <h1>My Leagues</h1>
+        <table className="table table-hover">
+          <thead className="thead-light">
+            <tr>
+              <th>Manager/User</th>
+              <th>League</th>
+              <th> 
+                <button onClick={() => this.goToLeauge()}>
+                  Go To
+                </button>
+              </th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* {this.state.showRender == true ? this.renderTable() : null} */}
+          {/* <button onClick={this.goToLeauge()}>
+            Go To
+          </button> */}
+          </tbody>
+        </table>
+        {this.state.showGoToLeauge == true ?
+        <PlayerManagement 
+          playerData={this.props.playerData}
+        />
+        : null}
+      </div>
+    );
   }
+  
 }
 
 export default DraftPage;

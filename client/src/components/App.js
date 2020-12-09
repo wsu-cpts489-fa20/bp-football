@@ -211,6 +211,8 @@ class App extends React.Component {
           }}
           openDraft={this.openDraft}
           changeMode={this.handleChangeMode}
+          playerData={this.state.playerData}
+          getCurrentData={this.getCurrentData}
         />
         <ModeBar
           mode={this.state.mode}
