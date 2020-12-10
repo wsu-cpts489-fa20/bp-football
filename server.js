@@ -72,6 +72,12 @@ const playerSchema = new Schema({
   starter: Boolean,
 });
 
+const nflPlayerSchema = new Schema({
+  playerId: Number,
+  name: String,
+  position: String
+});
+
 const gameSchema = new Schema(
   {
     week: { type: String, required: true },
@@ -97,7 +103,7 @@ const achievementSchema = new Schema({
   description: String,
   icon: String,
 });
-const Achievement = mongoose.model("Achievement", achievementSchema);
+
 //Define schema that maps to a document in the Users collection in the appdb
 //database.
 const userSchema = new Schema({
@@ -126,6 +132,8 @@ const userSchema = new Schema({
   league: [leagueSchema],
 });
 const User = mongoose.model("User", userSchema);
+
+const Player = mongoose.model("Player", nflPlayerSchema);
 
 //////////////////////////////////////////////////////////////////////////
 //PASSPORT SET-UP
@@ -211,7 +219,7 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       console.log("User authenticated through Google! In passport callback.");
       //Our convention is to build userId from displayName and provider
-      const userId = `${profile.emails[0].value}`;
+      const userId = `${profile.emails[0].value}`; 
       //See if document with this unique userId exists in database
       console.log("userId retreived from GOOGLE: " + userId);
 
@@ -229,7 +237,6 @@ passport.use(
           profilePicURL: profile.photos[0].value,
           players: [],
           games: [],
-          achievements: [],
         }).save();
       }
       return done(null, currentUser);
@@ -297,11 +304,11 @@ app
 //Should be accessed when user clicks on 'Login with GitHub' button on
 //Log In page.
 app.get("/auth/github", passport.authenticate("github"));
-//app.get('league/id')
 
 //CALLBACK route:  GitHub will call this route after the
 //OAuth authentication process is complete.
-//req.isAuthenticated() tells us whether authentication was successful.
+//req.isAuthenticated() tells us whether authentication was successful. 
+
 app.get(
   "/auth/github/callback",
   passport.authenticate("github", { failureRedirect: "/" }),
@@ -377,13 +384,6 @@ app.post(
     //Note: Do NOT redirect! Client will take over.
   }
 );
-
-// ToDo
-/////////////////////////////////
-//LEAGUE MANAGEMENT ROUTES
-////////////////////////////////
-
-//app.get("/league/:leagueId...")
 
 /////////////////////////////////
 //USER ACCOUNT MANAGEMENT ROUTES
@@ -469,8 +469,6 @@ app.post("/users/:userId", async (req, res, next) => {
         phoneNumber: req.body.phoneNumber,
         teamName: req.body.teamName,
         leagueId: req.body.leagueId,
-        players: [],
-        achievements: [],
         games: [],
       }).save();
       return res
@@ -672,7 +670,7 @@ app.post("/addplayers/:userId", async (req, res, next) => {
     let status = await User.updateOne(
       { id: req.params.userId },
       // { $push: { "games.0.players": req.body } }
-      { $push: { players: req.body } } //add the players into the database
+      { $push: { "players": req.body } } //add the players into the database
     );
     if (status.nModified != 1) {
       //Should never happen!
@@ -760,7 +758,7 @@ app.delete("/deleteplayer/:userId/:playername", async (req, res, next) => {
     let status = await User.updateOne(
       { id: req.params.userId },
       {
-        $pull: { players: { name: req.params.playername } },
+        $pull: { players: { name: (req.params.playername) } },
       }
     );
     if (status.nModified != 1) {
@@ -771,9 +769,7 @@ app.delete("/deleteplayer/:userId/:playername", async (req, res, next) => {
           "Unexpected error occurred when deleting player from database. Player was not deleted."
         );
     } else {
-      res
-        .status(200)
-        .send("specified player successfully deleted from database.");
+      res.status(200).send("specified player successfully deleted from database.");
     }
   } catch (err) {
     console.log(err);
@@ -914,3 +910,159 @@ app.post("/players/:userId", async (req, res, next) => {
       );
   }
 });
+
+
+//CREATE player route: Adds a new nfl players to the players collection (POST)
+app.post("/addplayerstocollection", async (req, res, next) => {
+  console.log(
+    "in /users route (POST) with params = " +
+      JSON.stringify(req.params) +
+      " and body = " +
+      JSON.stringify(req.body)
+  );
+  if (
+    !req.body.hasOwnProperty("playerId") ||
+    !req.body.hasOwnProperty("name") ||
+    !req.body.hasOwnProperty("position")
+  ) {
+    //Body does not contain correct properties
+    return res
+      .status(400)
+      .send(
+        "/users POST request formulated incorrectly. " +
+          "It must contain playerId, name, and position fields in message body."
+      );
+  }
+  try {
+    let thisPlayer = await Player.findOne({ playerId: req.body.playerId });
+    if (thisPlayer) {
+      //account already exists
+      res
+        .status(400)
+        .send(
+          "There is already player with similar id: '" + req.body.playerId + "'."
+        );
+    } else {
+      //account available -- add to database
+      thisPlayer = await new Player({
+        playerId: req.body.playerId,
+        name: req.body.name,
+        position: req.body.position,
+      }).save();
+      return res
+        .status(201)
+        .send(
+          "New player for '" + req.body.playerId + "' successfully created."
+        );
+    }
+  } catch (err) {
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when adding or looking up player in database. " +
+          err
+      );
+  }
+});
+
+//READ players route: Returns all players from players collection (GET)
+app.get("/getallplayers/", async (req, res) => {
+  console.log(
+    "in /getallplayers route (GET)");
+  try {
+    let thisPlayer = await Player.find({});
+    if (!thisPlayer) {
+      return res
+        .status(400)
+        .message(
+          "No player was found in database."
+        );
+    } else {
+      return res.status(200).json(JSON.stringify(thisPlayer));
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .message(
+        "Unexpected error occurred when looking up players in database: " + err
+      );
+  }
+});
+
+//READ players route: Returns all players associated
+//with a given position from players collection (GET)
+app.get("/getallplayers/:position", async (req, res) => {
+  console.log(
+    "in /getallplayers route (GET)");
+  try {
+    let thisPlayer = await Player.find({ position: req.params.position });
+    if (!thisPlayer) {
+      return res
+        .status(400)
+        .message(
+          "No player with specified position was found in database."
+        );
+    } else {
+      return res.status(200).json(JSON.stringify(thisPlayer));
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .message(
+        "Unexpected error occurred when looking up players in database: " + err
+      );
+  }
+});
+
+/* //READ players route: Return player object using their name
+app.get("/getplayerwithname/:name", async (req, res) => {
+  console.log(
+    "in /getplayerwithname route (GET)");
+  try {
+    let thisPlayer = await Player.find({ position: req.params.name });
+    if (!thisPlayer) {
+      return res
+        .status(400)
+        .message(
+          "No player with specified position was found in database."
+        );
+    } else {
+      return res.status(200).json(JSON.stringify(thisPlayer));
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .message(
+        "Unexpected error occurred when looking up players in database: " + err
+      );
+  }
+});
+
+//READ players route: Returns all players associated
+//with a given position from players collection (GET)
+app.get("/getplayerswithid/:playerId", async (req, res) => {
+  console.log(
+    "in /getplayerswithid route (GET)");
+  try {
+    let thisPlayer = await Player.find({ position: req.params.playerId });
+    if (!thisPlayer) {
+      return res
+        .status(400)
+        .message(
+          "No player with specified playerId was found in database."
+        );
+    } else {
+      return res.status(200).json(JSON.stringify(thisPlayer));
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .message(
+        "Unexpected error occurred when looking up players in database: " + err
+      );
+  }
+}); */
