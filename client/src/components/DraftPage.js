@@ -11,6 +11,8 @@ class DraftPage extends React.Component {
       TEList: [],
       KList: [],
       DefList: [],
+      positions: ["QB", "RB", "WR", "TE", "Kicker"],
+
 
       qb: "",
       rb: "",
@@ -24,58 +26,43 @@ class DraftPage extends React.Component {
   setList = () => {
     this.setState({ NFLPlayerList: this.props.playerData});
   }
+
   componentDidMount = async () => {
-    //
-  };
-
-  addPlayers = async (newData) => {
-    /* const url = "/games/user/" + this.props.userObj.id;
-    const res = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify(newData),
-    });
-    const msg = await res.text();
-    if (res.status != 200) {
-      this.setState({ errorMsg: msg });
-      //this.props.changeMode(AppMode.ROUNDS);
-    } else {
-      this.setState({ errorMsg: "" });
-      //this.props.refreshOnUpdate(AppMode.ROUNDS);
-    } */
-  };
-
-  createLists = () => {
-    // console.log(this.props.playerData.players);
-    if(this.props.playerData != 0 && this.state.QBList.length == 0){
-      for(let i = 0; i < this.props.playerData.players.length; i++){
-        // console.log(this.props.playerData.players[i]);
-   
-        // console.log(this.props.playerData.players[i].player.fullName);
-        if(this.props.playerData.players[i].player.defaultPositionId == 1){
-          this.state.QBList.push(this.props.playerData.players[i].player.fullName);
-        }
-        else if(this.props.playerData.players[i].player.defaultPositionId == 2){
-          this.state.RBList.push(this.props.playerData.players[i].player.fullName);
-        }
-        else if(this.props.playerData.players[i].player.defaultPositionId == 3){
-          this.state.WRList.push(this.props.playerData.players[i].player.fullName);
-        }
-        else if(this.props.playerData.players[i].player.defaultPositionId == 4){
-          this.state.TEList.push(this.props.playerData.players[i].player.fullName);
-        }
-        else if(this.props.playerData.players[i].player.defaultPositionId == 5){
-          this.state.KList.push(this.props.playerData.players[i].player.fullName);
-        }
-        else if(this.props.playerData.players[i].player.defaultPositionId == 16){
-          this.state.DefList.push(this.props.playerData.players[i].player.fullName);
-        }
-
-        
-
-        // this.state.NFLPlayerList.push(this.props.playerData.players[i].player.fullName);
+    for(let i = 0; i < 5; i++){
+      let response = await fetch("/getallplayers/" + this.state.positions[i]);
+      response = await response.json();
+      const obj = JSON.parse(response);
+      console.log(obj);
+      console.log(obj.players);
+      if(i == 0){
+        this.setState({
+          QBList: obj,
+        });  
       }
+      else if(i == 1){
+        this.setState({
+          RBList: obj,
+        });  
+      }
+      else if(i == 2){
+        this.setState({
+          WRList: obj,
+        });  
+      }
+      else if(i == 3){
+        this.setState({
+          TEList: obj,
+        });  
+      }
+      else if(i == 4){
+        this.setState({
+          KList: obj,
+        });  
+      }
+
     }
-  }
+  };
+
 
   handleSubmit = () => {
     //send team info to backend
@@ -84,20 +71,17 @@ class DraftPage extends React.Component {
   }
 
   render() {
-    if (this.state.QBList.length == 0){
-      this.props.getCurrentData();
-      this.createLists();
-    }
       var MakeItem = function(X) {
-          return <option>{X}</option>;
+          return <option>{X.name}</option>;
       };   
     
     return (
     <div className="padded-page">
       <h1>Draft Team</h1>
-      {this.props.playerData != 0 ?
+      {/* {this.props.playerData != 0 ? */}
       <div>
         <center>
+          <br/>
           QB: 
           <select style={{width: `${150}px`}} value={this.state.qb}
                   onChange={(value) => { this.setState({ qb: value.target.value }); }}>
@@ -133,13 +117,13 @@ class DraftPage extends React.Component {
           </select>
           <br/>
           <br/>
-          Def: 
+          {/* Def: 
           <select style={{width: `${150}px`}} value={this.state.def}
                   onChange={(value) => { this.setState({ def: value.target.value }); }}>
             {(this.state.DefList).map(MakeItem)}
-          </select>
+          </select> */}
           <br/>
-          <br/>
+          {/* <br/> */}
           <button
               type="submit"
               className="btn-color-theme btn btn-primary btn-block"
@@ -150,7 +134,7 @@ class DraftPage extends React.Component {
           </button>
         </center>
       </div>
-      : null }
+      {/* : null } */}
     </div>
     );
   }
