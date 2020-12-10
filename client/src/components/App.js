@@ -10,8 +10,9 @@ import Rounds from "./Rounds.js";
 import CoursesPage from "./CoursesPage.js";
 import Profile from "./ProfilePage";
 import AboutBox from "./AboutBox.js";
-import Draft from "./Draft.js";
+import Draft from "./DraftPage.js";
 import ProfilePage from "./ProfilePage";
+import DraftPage from "./DraftPage.js";
 
 const modeTitle = {};
 modeTitle[AppMode.LOGIN] = "Welcome to Fantasy Football";
@@ -31,7 +32,7 @@ modeToPage[AppMode.ROUNDS] = Rounds;
 modeToPage[AppMode.ROUNDS_LOGROUND] = Rounds;
 modeToPage[AppMode.ROUNDS_EDITROUND] = Rounds;
 modeToPage[AppMode.COURSES] = CoursesPage;
-modeToPage[AppMode.DRAFT] = Draft;
+modeToPage[AppMode.DRAFT] = DraftPage;
 modeToPage[AppMode.PROFILE] = ProfilePage;
 
 class App extends React.Component {
@@ -172,7 +173,7 @@ class App extends React.Component {
           <AboutBox close={() => this.setState({ showAboutDialog: false })} />
         ) : null} */}
         {this.state.showDraftDialog ? (
-          <Draft close={this.closeDraft} userObj={this.state.userObj} />
+          <DraftPage close={this.closeDraft} userObj={this.state.userObj} />
         ) : null}
         {this.state.statusMsg != "" ? (
           <div className="status-msg">
