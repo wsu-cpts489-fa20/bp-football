@@ -27,7 +27,11 @@ class NavBar extends React.Component {
     return (
       <div className="navbar">
         <span className="navbar-items">
-          <button className="sidemenu-btn" onClick={this.handleMenuBtnClick}>
+          <button
+            id="hamburgerBtn"
+            className="sidemenu-btn"
+            onClick={this.handleMenuBtnClick}
+          >
             <span
               id="menuBtnIcon"
               className={"sidemenu-btn-icon " + this.getMenuBtnIcon()}

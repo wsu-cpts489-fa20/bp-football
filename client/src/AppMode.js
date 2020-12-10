@@ -2,7 +2,7 @@
 
 const AppMode = {
   LOGIN: "LoginMode",
-  FEED: "FeedMode",
+  TEAM: "TeamMode",
   ROUNDS: "RoundsMode",
   ROUNDS_LOGROUND: "RoundsMode-LogRound",
   ROUNDS_EDITROUND: "RoundsMode-EditRound",

@@ -211,7 +211,7 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       console.log("User authenticated through Google! In passport callback.");
       //Our convention is to build userId from displayName and provider
-      const userId = `${profile.emails[0].value}`; 
+      const userId = `${profile.emails[0].value}`;
       //See if document with this unique userId exists in database
       console.log("userId retreived from GOOGLE: " + userId);
 
@@ -297,6 +297,7 @@ app
 //Should be accessed when user clicks on 'Login with GitHub' button on
 //Log In page.
 app.get("/auth/github", passport.authenticate("github"));
+//app.get('league/id')
 
 //CALLBACK route:  GitHub will call this route after the
 //OAuth authentication process is complete.
@@ -376,6 +377,13 @@ app.post(
     //Note: Do NOT redirect! Client will take over.
   }
 );
+
+// ToDo
+/////////////////////////////////
+//LEAGUE MANAGEMENT ROUTES
+////////////////////////////////
+
+//app.get("/league/:leagueId...")
 
 /////////////////////////////////
 //USER ACCOUNT MANAGEMENT ROUTES
@@ -664,7 +672,7 @@ app.post("/addplayers/:userId", async (req, res, next) => {
     let status = await User.updateOne(
       { id: req.params.userId },
       // { $push: { "games.0.players": req.body } }
-      { $push: { "players": req.body } } //add the players into the database
+      { $push: { players: req.body } } //add the players into the database
     );
     if (status.nModified != 1) {
       //Should never happen!
@@ -752,7 +760,7 @@ app.delete("/deleteplayer/:userId/:playername", async (req, res, next) => {
     let status = await User.updateOne(
       { id: req.params.userId },
       {
-        $pull: { players: { name: (req.params.playername) } },
+        $pull: { players: { name: req.params.playername } },
       }
     );
     if (status.nModified != 1) {
@@ -763,7 +771,9 @@ app.delete("/deleteplayer/:userId/:playername", async (req, res, next) => {
           "Unexpected error occurred when deleting player from database. Player was not deleted."
         );
     } else {
-      res.status(200).send("specified player successfully deleted from database.");
+      res
+        .status(200)
+        .send("specified player successfully deleted from database.");
     }
   } catch (err) {
     console.log(err);

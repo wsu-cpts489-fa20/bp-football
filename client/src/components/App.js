@@ -5,7 +5,7 @@ import ModeBar from "./ModeBar.js";
 import CreateEditAccountDialog from "./CreateEditAccountDialog.js";
 import LoginPage from "./LoginPage.js";
 import AppMode from "./../AppMode.js";
-import FeedPage from "./FeedPage.js";
+import TeamPage from "./TeamPage.js";
 import Rounds from "./Rounds.js";
 import CoursesPage from "./CoursesPage.js";
 import Profile from "./ProfilePage";
@@ -15,7 +15,7 @@ import ProfilePage from "./ProfilePage";
 
 const modeTitle = {};
 modeTitle[AppMode.LOGIN] = "Welcome to Fantasy Football";
-modeTitle[AppMode.FEED] = "Activity Feed";
+modeTitle[AppMode.TEAM] = "My Team";
 modeTitle[AppMode.ROUNDS] = "My Game History";
 modeTitle[AppMode.ROUNDS_LOGROUND] = "Log New Game";
 //todo: remove ability to edit rounds
@@ -26,7 +26,7 @@ modeTitle[AppMode.PROFILE] = "Profile";
 
 const modeToPage = {};
 modeToPage[AppMode.LOGIN] = LoginPage;
-modeToPage[AppMode.FEED] = FeedPage;
+modeToPage[AppMode.TEAM] = TeamPage;
 modeToPage[AppMode.ROUNDS] = Rounds;
 modeToPage[AppMode.ROUNDS_LOGROUND] = Rounds;
 modeToPage[AppMode.ROUNDS_EDITROUND] = Rounds;
@@ -62,7 +62,7 @@ class App extends React.Component {
             this.setState({
               userObj: obj.user,
               authenticated: true,
-              mode: AppMode.FEED, //We're authenticated so can get into the app.
+              mode: AppMode.ROUNDS, //We're authenticated so can get into the app.
             });
           }
         });
@@ -211,6 +211,8 @@ class App extends React.Component {
           }}
           openDraft={this.openDraft}
           changeMode={this.handleChangeMode}
+          playerData={this.state.playerData}
+          getCurrentData={this.getCurrentData}
         />
         <ModeBar
           mode={this.state.mode}

@@ -1,0 +1,12 @@
+Meeting date: 11/30/2020
+At the start of this week we discussed what we got done over Thanksgiving break, what features needed touching up, and what we needed to add for the next milestone. 
+We continued the live coding sections because it was a good refresher to walkthrough establishing routes to make CRUD operations for new collections we made for this milestone.
+Brandon was the driver and did the coding while the rest of the team fixed any errors that came up along the way, whether this be runtime, logical errors, request errors, etc.
+This was helpful because it cemented all of our knowledge simultaneously on how full stack development works, so that when we worked individually, the process was faster because
+we walked through it together.
+
+Our meetings were stretched out a bit longer than week 2's milestone, which gave us more production time, and therefore we got more done overall compared to last milestone.
+
+One thing we need to improve on is our development process. It is often difficult to remember creating issues and linking commits to those issues when we are busy cranking away
+at a coding challenge presented to us. There is often also not enough time to establish proper commits and code reviews. We did our best to have a better dev process this week,
+and while we did improve, it could be better. Maybe by next week we will have better habits.

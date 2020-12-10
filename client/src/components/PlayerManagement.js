@@ -1,34 +1,23 @@
 import React from "react";
 import CSVReader from "react-csv-reader";
-import PlayerManagement from "./PlayerManagement";
-class DraftPage extends React.Component {
+class PlayerManagement extends React.Component {
   constructor(props) {
     super(props);
     this.parsedata = [];
     this.fileInfo = [];
     this.leagueName = "";
     this.state = {
-      playersData: [],
-      showGoToLeauge: false
+      NFLPlayerList: this.props.playerData,
     };
   }
 
-  goToLeauge = () => {
-    this.setState({ showGoToLeauge: true });
-  }
 
   componentDidMount = async () => {
-    // let response = await fetch("/league/" + this.props.userObj.id);
-    // response = await response.json();
-    // const obj = JSON.parse(response);
-    // console.log(obj.players);
-    // this.setState({
-    //   players: obj.players,
-    // });
+    //
   };
 
   addPlayers = async (newData) => {
-    /* const url = "/games/addplayers/" + this.props.userObj.id;
+    /* const url = "/games/user/" + this.props.userObj.id;
     const res = await fetch(url, {
       method: "POST",
       body: JSON.stringify(newData),
@@ -89,38 +78,28 @@ class DraftPage extends React.Component {
   };
 
   render() {
+    var  MakeItem = function(X) {
+                return <option>{X}</option>;
+            };
     return (
-      <div className="padded-page">
-        <h1>My Leagues</h1>
-        <table className="table table-hover">
-          <thead className="thead-light">
-            <tr>
-              <th>Manager/User</th>
-              <th>League</th>
-              <th> 
-                <button onClick={() => this.goToLeauge()}>
-                  Go To
-                </button>
-              </th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* {this.state.showRender == true ? this.renderTable() : null} */}
-          {/* <button onClick={this.goToLeauge()}>
-            Go To
-          </button> */}
-          </tbody>
-        </table>
-        {this.state.showGoToLeauge == true ?
-        <PlayerManagement 
-          playerData={this.props.playerData}
-        />
-        : null}
-      </div>
+    <div className="padded-page">
+      {/* <div class="dropdown">
+        <button onclick="myFunction()" class="dropbtn">Dropdown</button>
+        <div id="myDropdown" class="dropdown-content">
+          <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()"/>
+          <a href="#about">About</a>
+          <a href="#base">Base</a>
+          <a href="#blog">Blog</a>
+          <a href="#contact">Contact</a>
+          <a href="#custom">Custom</a>
+          <a href="#support">Support</a>
+          <a href="#tools">Tools</a>
+        </div>
+      </div>       */}
+      <select>{this.state.NFLPlayerList.map(MakeItem)}</select>
+    </div>
     );
   }
-  
 }
 
-export default DraftPage;
+export default PlayerManagement;
