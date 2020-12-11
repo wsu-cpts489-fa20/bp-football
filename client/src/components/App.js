@@ -20,7 +20,7 @@ modeTitle[AppMode.ROUNDS] = "My Game History";
 modeTitle[AppMode.ROUNDS_LOGROUND] = "Log New Game";
 //todo: remove ability to edit rounds
 modeTitle[AppMode.ROUNDS_EDITROUND] = "Edit Round";
-modeTitle[AppMode.COURSES] = "Courses";
+modeTitle[AppMode.COURSES] = "League";
 modeTitle[AppMode.DRAFT] = "Draft";
 modeTitle[AppMode.PROFILE] = "Profile";
 

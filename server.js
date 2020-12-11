@@ -111,7 +111,7 @@ const userSchema = new Schema({
   phoneNumber: String,
   teamName: String,
   leagueId: String, //league identifier
-
+  leagueName: String, //placeholder
   commissioner: Boolean,
   win: { type: Number, min: 0, max: 15 },
   loss: { type: Number, min: 0, max: 15 },
