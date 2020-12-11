@@ -62,7 +62,7 @@ const Schema = mongoose.Schema;
 
 const leagueSchema = new Schema({
   leagueName: { type: String, required: true },
-  userIds: [userSchema],
+  userIds: [String],
   leagueId: String,
 });
 const League = mongoose.model("League", leagueSchema);
