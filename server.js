@@ -135,6 +135,8 @@ const User = mongoose.model("User", userSchema);
 
 const Player = mongoose.model("Player", nflPlayerSchema);
 
+const League = mongoose.model("League", leagueSchema);
+
 //////////////////////////////////////////////////////////////////////////
 //PASSPORT SET-UP
 //The following code sets up the app with OAuth authentication using
@@ -1066,3 +1068,127 @@ app.get("/getplayerswithid/:playerId", async (req, res) => {
       );
   }
 }); */
+
+
+//Routes for League Schema
+//CREATE league route: Adds a new league to the database (POST)
+app.post("/createleague", async (req, res, next) => {
+  console.log(
+    "in /createleague route (POST) with params = " +
+      JSON.stringify(req.params) +
+      " and body = " +
+      JSON.stringify(req.body)
+  );
+  if (
+    !req.body.hasOwnProperty("leagueName") ||
+    !req.body.hasOwnProperty("userIds") ||
+    !req.body.hasOwnProperty("leagueId")
+  ) {
+    //Body does not contain correct properties
+    return res
+      .status(400)
+      .send(
+        "/createleague POST request formulated incorrectly. " +
+          "It must contain leagueName, userIds, and leagueId fields in message body."
+      );
+  }
+  try {
+    let thisLeague = await League.findOne({ leagueId: req.body.leagueId });
+    if (thisLeague) {
+      //account already exists
+      res
+        .status(400)
+        .send(
+          "There is already league with similar id: '" + req.body.leagueId + "'."
+        );
+    } else {
+      thisLeague = await new League({
+        leagueName: req.body.leagueName,
+        userIds: req.body.userIds,
+        leagueId: req.body.leagueId,
+      }).save();
+      return res
+        .status(201)
+        .send(
+          "New league with id'" + req.body.leagueId + "' successfully created."
+        );
+    }
+  } catch (err) {
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when adding or looking up player in database. " +
+          err
+      );
+  }
+});
+
+// //Add players to league - POST route
+// // -- adds user id to the userIds array in league schema
+app.post("/addplayerstoleague/:leagueId/:userId", async (req, res, next) => {
+  console.log(
+    "in /games/players (POST) route with params = " +
+      JSON.stringify(req.params) +
+      " and body = " +
+      JSON.stringify(req.body)
+  );
+  if (
+    !req.params.hasOwnProperty("userId")
+  ) {
+    //Body does not contain correct properties
+    return res
+      .status(400)
+      .send(
+        "POST request on /games/players formulated incorrectly." +
+          "Body must contain all 1 required field - userId"
+      );
+  }
+  try {
+    let status = await League.updateOne(
+      // { $push: { "games.0.players": req.body } }
+      { $addToSet: { "userIds": req.params.userId } } //add the user into the userIds array
+    );
+    if (status.nModified != 1) {
+      //Should never happen!
+      res
+        .status(400)
+        .send(
+          "Unexpected error occurred when adding userId to the array in league"
+        );
+    } else {
+      res.status(200).send("Users successfully added to league database - userIds array.");
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when adding user" + " to database: " + err
+      );
+  }
+});
+
+//GET all the players id from the league schema
+app.get("/getleague/:leagueId", async (req, res) => {
+  console.log(
+    "in /getallplayers route (GET)");
+  try {
+    let thisLeague = await League.find({ leagueId: req.params.leagueId });
+    if (!thisLeague) {
+      return res
+        .status(400)
+        .message(
+          "No league with specified id was found in database."
+        );
+    } else {
+      return res.status(200).json(JSON.stringify(thisLeague));
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .message(
+        "Unexpected error occurred when looking up league in database: " + err
+      );
+  }
+});
