@@ -60,6 +60,8 @@ class DraftPage extends React.Component {
           KList: obj,
         });  
       }
+    }
+  }
 
   //Add players to the backend
   addPlayers = async (newData) => {
@@ -77,7 +79,7 @@ class DraftPage extends React.Component {
     } else {
       console.log(msg);
     }
-} 
+  }; 
 
 
   handleSubmit = () => {
@@ -114,7 +116,7 @@ class DraftPage extends React.Component {
     this.addPlayers(player5);
 
     this.props.changeMode(AppMode.TEAM);
-  }
+  };
 
   render() {
       var MakeItem = function(X) {
@@ -182,7 +184,7 @@ class DraftPage extends React.Component {
       </div>
       {/* : null } */}
     </div>
-    );
+    )
   }
 }
 
