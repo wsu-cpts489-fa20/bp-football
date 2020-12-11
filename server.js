@@ -1125,54 +1125,47 @@ app.post("/createleague", async (req, res, next) => {
 
 // //Add players to league - POST route
 // // -- adds user id to the userIds array in league schema
-// app.post("/addplayerstoleague/:leagueId", async (req, res, next) => {
-//   console.log(
-//     "in /games (PUT) route with params = " +
-//       JSON.stringify(req.params) +
-//       " and body = " +
-//       JSON.stringify(req.body)
-//   );
-//   const validProps = ["week", "score", "opponentScore", "win", "loss"];
-//   let bodyObj = { ...req.body };
-//   delete bodyObj._id; //Not needed for update
-//   delete bodyObj.SGS; //We'll compute this below in seconds.
-//   for (const bodyProp in bodyObj) {
-//     if (!validProps.includes(bodyProp)) {
-//       return res
-//         .status(400)
-//         .send(
-//           "games/ PUT request formulated incorrectly." +
-//             "It includes " +
-//             bodyProp +
-//             ". However, only the following props are allowed: " +
-//             "'week', 'score', 'opponentScore', 'win', 'loss', "
-//         );
-//     } else {
-//       bodyObj["games.$." + bodyProp] = bodyObj[bodyProp];
-//       delete bodyObj[bodyProp];
-//     }
-//   }
-//   try {
-//     let status = await User.updateOne(
-//       {
-//         id: req.params.userId,
-//         "games._id": mongoose.Types.ObjectId(req.params.roundId),
-//       },
-//       { $set: bodyObj }
-//     );
-//     if (status.nModified != 1) {
-//       res
-//         .status(400)
-//         .send(
-//           "Unexpected error occurred when updating games in database. Game was not updated."
-//         );
-//     } else {
-//       res.status(200).send("Game successfully updated in database.");
-//     }
-//   } catch (err) {
-//     console.log(err);
-//     return res
-//       .status(400)
-//       .send("Unexpected error occurred when updating game in database: " + err);
-//   }
-// });
+app.post("/addplayerstoleague/:leagueId/:userId", async (req, res, next) => {
+  console.log(
+    "in /games/players (POST) route with params = " +
+      JSON.stringify(req.params) +
+      " and body = " +
+      JSON.stringify(req.body)
+  );
+  if (
+    !req.params.hasOwnProperty("userId")
+  ) {
+    //Body does not contain correct properties
+    return res
+      .status(400)
+      .send(
+        "POST request on /games/players formulated incorrectly." +
+          "Body must contain all 1 required field - userId"
+      );
+  }
+  try {
+    let status = await League.updateOne(
+      // { $push: { "games.0.players": req.body } }
+      { $addToSet: { "userIds": req.params.userId } } //add the user into the userIds array
+    );
+    if (status.nModified != 1) {
+      //Should never happen!
+      res
+        .status(400)
+        .send(
+          "Unexpected error occurred when adding userId to the array in league"
+        );
+    } else {
+      res.status(200).send("Users successfully added to league database - userIds array.");
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when adding user" + " to database: " + err
+      );
+  }
+});
+
+//GET all the players id from the league schema
