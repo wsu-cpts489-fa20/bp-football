@@ -1,5 +1,5 @@
 import React from "react";
-import AppMode from "./../AppMode.js";
+//import AppMode from "./../AppMode.js";
 
 class CoursesTable extends React.Component {
   constructor(props) {
@@ -9,19 +9,29 @@ class CoursesTable extends React.Component {
       wins: [],     //wins
       losses: [],   //losses
       ManagerNames: [],//managers
-      leagueId: "",   //leagueID --same for all 
+      leagueIds: [],   //leagueID --to track all players in same league 
       leagueName: "", //leadueName --same for all
     };
   }
 
+  //grab the league id and name from database
   componentDidMount = async () => {
-    let response = await fetch("/leagues/" + this.props.userObj.leagueName);
+    
+    let response = await fetch("/users/" + this.props.userObj.id);
     response = await response.json();
-    const obj = JSON.parse(response);
-    console.log(obj.leagueId)
+    const obj2 = JSON.parse(response);
+    console.log(obj2.leagueName);
     this.setState({
-      leagueId: obj.leagueId,
-      leagueName: obj.leagueName
+      leagueName: obj2.leagueName,
+      leagueId: obj2.leagueId,
+    });
+
+    let response2 = await fetch("/leagues/" + this.state.leagueName);
+    response2 = await response2.json();
+    const obj = JSON.parse(response2);
+    console.log(obj.leagueName)
+    this.setState({
+      leagueIds: obj.leagueId,
     });
     //copy from teampage
     //use league route to get a league obj
