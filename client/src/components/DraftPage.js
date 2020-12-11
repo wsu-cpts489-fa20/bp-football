@@ -1,4 +1,5 @@
 import React from "react";
+import AppMode from "./../AppMode.js";
 
 class DraftPage extends React.Component {
   constructor(props) {
@@ -28,21 +29,23 @@ class DraftPage extends React.Component {
     //
   };
 
+  //Add players to the backend
   addPlayers = async (newData) => {
-    /* const url = "/games/user/" + this.props.userObj.id;
+    const url = 'http://localhost:8081/addplayers/' + this.props.userObj.id;
     const res = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify(newData),
-    });
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+        method: 'POST',
+        body: JSON.stringify(newData)}); 
     const msg = await res.text();
     if (res.status != 200) {
-      this.setState({ errorMsg: msg });
-      //this.props.changeMode(AppMode.ROUNDS);
+        console.log(msg);
     } else {
-      this.setState({ errorMsg: "" });
-      //this.props.refreshOnUpdate(AppMode.ROUNDS);
-    } */
-  };
+      console.log(msg);
+    }
+} 
 
   createLists = () => {
     // console.log(this.props.playerData.players);
@@ -80,7 +83,37 @@ class DraftPage extends React.Component {
   handleSubmit = () => {
     //send team info to backend
 
+    var player1 = {};
+    player1.name = this.state.qb;
+    player1.position = "QB";
+    player1.starter = true;
+    this.addPlayers(player1);
 
+    var player2 = {};
+    player2.name = this.state.rb;
+    player2.position = "RB";
+    player2.starter = true;
+    this.addPlayers(player2);
+
+    var player3 = {};
+    player3.name = this.state.wr;
+    player3.position = "WR";
+    player3.starter = true;
+    this.addPlayers(player3);
+
+    var player4 = {};
+    player4.name = this.state.te;
+    player4.position = "TE";
+    player4.starter = true;
+    this.addPlayers(player4);
+
+    var player5 = {};
+    player5.name = this.state.k;
+    player5.position = "Kicker";
+    player5.starter = true;
+    this.addPlayers(player5);
+
+    this.props.changeMode(AppMode.TEAM);
   }
 
   render() {
@@ -143,7 +176,7 @@ class DraftPage extends React.Component {
           <button
               type="submit"
               className="btn-color-theme btn btn-primary btn-block"
-              onClick={this.handleSubmit()}
+              onClick={this.handleSubmit}
             >
               <span id="draft-btn-icon" className="submit-draft" />
               &nbsp;Submit Team Draft
