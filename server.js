@@ -1169,3 +1169,26 @@ app.post("/addplayerstoleague/:leagueId/:userId", async (req, res, next) => {
 });
 
 //GET all the players id from the league schema
+app.get("/getleague/:leagueId", async (req, res) => {
+  console.log(
+    "in /getallplayers route (GET)");
+  try {
+    let thisLeague = await League.find({ leagueId: req.params.leagueId });
+    if (!thisLeague) {
+      return res
+        .status(400)
+        .message(
+          "No league with specified id was found in database."
+        );
+    } else {
+      return res.status(200).json(JSON.stringify(thisLeague));
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .message(
+        "Unexpected error occurred when looking up league in database: " + err
+      );
+  }
+});
