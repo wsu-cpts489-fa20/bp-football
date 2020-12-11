@@ -125,7 +125,9 @@ class DraftPage extends React.Component {
     
     return (
     <div className="padded-page">
-      <h1>Draft Team</h1>
+      <center>
+        <h1>Draft My Offline Team</h1>
+      </center>
       {/* {this.props.playerData != 0 ? */}
       <div>
         <center>
@@ -178,7 +180,7 @@ class DraftPage extends React.Component {
               onClick={this.handleSubmit}
             >
               <span id="draft-btn-icon" className="submit-draft" />
-              &nbsp;Submit Team Draft
+              &nbsp;Submit Team
           </button>
         </center>
       </div>
