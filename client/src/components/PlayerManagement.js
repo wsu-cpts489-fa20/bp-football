@@ -1,25 +1,16 @@
 import React from "react";
 import CSVReader from "react-csv-reader";
-class DraftPage extends React.Component {
+class PlayerManagement extends React.Component {
   constructor(props) {
     super(props);
     this.parsedata = [];
     this.fileInfo = [];
     this.leagueName = "";
     this.state = {
-      playersData: [],
+      NFLPlayerList: this.props.playerData,
     };
   }
 
-  parseOptions = (data, info) => {
-    console.log(data);
-    console.log(info);
-    this.parsedata = data;
-
-    this.setState({ playersData: data });
-
-    this.fileInfo = info;
-  };
 
   componentDidMount = async () => {
     //
@@ -87,10 +78,28 @@ class DraftPage extends React.Component {
   };
 
   render() {
-    return {
-      /*this.rendertable*/
-    };
+    var  MakeItem = function(X) {
+                return <option>{X}</option>;
+            };
+    return (
+    <div className="padded-page">
+      {/* <div class="dropdown">
+        <button onclick="myFunction()" class="dropbtn">Dropdown</button>
+        <div id="myDropdown" class="dropdown-content">
+          <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()"/>
+          <a href="#about">About</a>
+          <a href="#base">Base</a>
+          <a href="#blog">Blog</a>
+          <a href="#contact">Contact</a>
+          <a href="#custom">Custom</a>
+          <a href="#support">Support</a>
+          <a href="#tools">Tools</a>
+        </div>
+      </div>       */}
+      <select>{this.state.NFLPlayerList.map(MakeItem)}</select>
+    </div>
+    );
   }
 }
 
-export default DraftPage;
+export default PlayerManagement;

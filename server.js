@@ -73,6 +73,12 @@ const playerSchema = new Schema({
   starter: Boolean,
 });
 
+const nflPlayerSchema = new Schema({
+  playerId: Number,
+  name: String,
+  position: String,
+});
+
 const gameSchema = new Schema(
   {
     week: { type: String, required: true },
@@ -98,7 +104,7 @@ const achievementSchema = new Schema({
   description: String,
   icon: String,
 });
-const Achievement = mongoose.model("Achievement", achievementSchema);
+
 //Define schema that maps to a document in the Users collection in the appdb
 //database.
 const userSchema = new Schema({
@@ -126,6 +132,10 @@ const userSchema = new Schema({
   league: [leagueSchema],
 });
 const User = mongoose.model("User", userSchema);
+
+const Player = mongoose.model("Player", nflPlayerSchema);
+
+const League = mongoose.model("League", leagueSchema);
 
 //////////////////////////////////////////////////////////////////////////
 //PASSPORT SET-UP
@@ -229,7 +239,6 @@ passport.use(
           profilePicURL: profile.photos[0].value,
           players: [],
           games: [],
-          achievements: [],
         }).save();
       }
       return done(null, currentUser);
@@ -297,11 +306,11 @@ app
 //Should be accessed when user clicks on 'Login with GitHub' button on
 //Log In page.
 app.get("/auth/github", passport.authenticate("github"));
-//app.get('league/id')
 
 //CALLBACK route:  GitHub will call this route after the
 //OAuth authentication process is complete.
 //req.isAuthenticated() tells us whether authentication was successful.
+
 app.get(
   "/auth/github/callback",
   passport.authenticate("github", { failureRedirect: "/" }),
@@ -534,8 +543,6 @@ app.post("/users/:userId", async (req, res, next) => {
         phoneNumber: req.body.phoneNumber,
         teamName: req.body.teamName,
         leagueId: req.body.leagueId,
-        players: [],
-        achievements: [],
         games: [],
       }).save();
       return res
@@ -976,6 +983,277 @@ app.post("/players/:userId", async (req, res, next) => {
       .status(400)
       .send(
         "Unexpected error occurred when adding players" + " to database: " + err
+      );
+  }
+});
+
+//CREATE player route: Adds a new nfl players to the players collection (POST)
+app.post("/addplayerstocollection", async (req, res, next) => {
+  console.log(
+    "in /users route (POST) with params = " +
+      JSON.stringify(req.params) +
+      " and body = " +
+      JSON.stringify(req.body)
+  );
+  if (
+    !req.body.hasOwnProperty("playerId") ||
+    !req.body.hasOwnProperty("name") ||
+    !req.body.hasOwnProperty("position")
+  ) {
+    //Body does not contain correct properties
+    return res
+      .status(400)
+      .send(
+        "/users POST request formulated incorrectly. " +
+          "It must contain playerId, name, and position fields in message body."
+      );
+  }
+  try {
+    let thisPlayer = await Player.findOne({ playerId: req.body.playerId });
+    if (thisPlayer) {
+      //account already exists
+      res
+        .status(400)
+        .send(
+          "There is already player with similar id: '" +
+            req.body.playerId +
+            "'."
+        );
+    } else {
+      //account available -- add to database
+      thisPlayer = await new Player({
+        playerId: req.body.playerId,
+        name: req.body.name,
+        position: req.body.position,
+      }).save();
+      return res
+        .status(201)
+        .send(
+          "New player for '" + req.body.playerId + "' successfully created."
+        );
+    }
+  } catch (err) {
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when adding or looking up player in database. " +
+          err
+      );
+  }
+});
+
+//READ players route: Returns all players from players collection (GET)
+app.get("/getallplayers/", async (req, res) => {
+  console.log("in /getallplayers route (GET)");
+  try {
+    let thisPlayer = await Player.find({});
+    if (!thisPlayer) {
+      return res.status(400).message("No player was found in database.");
+    } else {
+      return res.status(200).json(JSON.stringify(thisPlayer));
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .message(
+        "Unexpected error occurred when looking up players in database: " + err
+      );
+  }
+});
+
+//READ players route: Returns all players associated
+//with a given position from players collection (GET)
+app.get("/getallplayers/:position", async (req, res) => {
+  console.log("in /getallplayers route (GET)");
+  try {
+    let thisPlayer = await Player.find({ position: req.params.position });
+    if (!thisPlayer) {
+      return res
+        .status(400)
+        .message("No player with specified position was found in database.");
+    } else {
+      return res.status(200).json(JSON.stringify(thisPlayer));
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .message(
+        "Unexpected error occurred when looking up players in database: " + err
+      );
+  }
+});
+
+/* //READ players route: Return player object using their name
+app.get("/getplayerwithname/:name", async (req, res) => {
+  console.log(
+    "in /getplayerwithname route (GET)");
+  try {
+    let thisPlayer = await Player.find({ position: req.params.name });
+    if (!thisPlayer) {
+      return res
+        .status(400)
+        .message(
+          "No player with specified position was found in database."
+        );
+    } else {
+      return res.status(200).json(JSON.stringify(thisPlayer));
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .message(
+        "Unexpected error occurred when looking up players in database: " + err
+      );
+  }
+});
+
+//READ players route: Returns all players associated
+//with a given position from players collection (GET)
+app.get("/getplayerswithid/:playerId", async (req, res) => {
+  console.log(
+    "in /getplayerswithid route (GET)");
+  try {
+    let thisPlayer = await Player.find({ position: req.params.playerId });
+    if (!thisPlayer) {
+      return res
+        .status(400)
+        .message(
+          "No player with specified playerId was found in database."
+        );
+    } else {
+      return res.status(200).json(JSON.stringify(thisPlayer));
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .message(
+        "Unexpected error occurred when looking up players in database: " + err
+      );
+  }
+}); */
+
+//Routes for League Schema
+//CREATE league route: Adds a new league to the database (POST)
+app.post("/createleague", async (req, res, next) => {
+  console.log(
+    "in /createleague route (POST) with params = " +
+      JSON.stringify(req.params) +
+      " and body = " +
+      JSON.stringify(req.body)
+  );
+  if (
+    !req.body.hasOwnProperty("leagueName") ||
+    !req.body.hasOwnProperty("userIds") ||
+    !req.body.hasOwnProperty("leagueId")
+  ) {
+    //Body does not contain correct properties
+    return res
+      .status(400)
+      .send(
+        "/createleague POST request formulated incorrectly. " +
+          "It must contain leagueName, userIds, and leagueId fields in message body."
+      );
+  }
+  try {
+    let thisLeague = await League.findOne({ leagueId: req.body.leagueId });
+    if (thisLeague) {
+      //account already exists
+      res
+        .status(400)
+        .send(
+          "There is already league with similar id: '" +
+            req.body.leagueId +
+            "'."
+        );
+    } else {
+      thisLeague = await new League({
+        leagueName: req.body.leagueName,
+        userIds: req.body.userIds,
+        leagueId: req.body.leagueId,
+      }).save();
+      return res
+        .status(201)
+        .send(
+          "New league with id'" + req.body.leagueId + "' successfully created."
+        );
+    }
+  } catch (err) {
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when adding or looking up player in database. " +
+          err
+      );
+  }
+});
+
+// //Add players to league - POST route
+// // -- adds user id to the userIds array in league schema
+app.post("/addplayerstoleague/:leagueId/:userId", async (req, res, next) => {
+  console.log(
+    "in /games/players (POST) route with params = " +
+      JSON.stringify(req.params) +
+      " and body = " +
+      JSON.stringify(req.body)
+  );
+  if (!req.params.hasOwnProperty("userId")) {
+    //Body does not contain correct properties
+    return res
+      .status(400)
+      .send(
+        "POST request on /games/players formulated incorrectly." +
+          "Body must contain all 1 required field - userId"
+      );
+  }
+  try {
+    let status = await League.updateOne(
+      // { $push: { "games.0.players": req.body } }
+      { $addToSet: { userIds: req.params.userId } } //add the user into the userIds array
+    );
+    if (status.nModified != 1) {
+      //Should never happen!
+      res
+        .status(400)
+        .send(
+          "Unexpected error occurred when adding userId to the array in league"
+        );
+    } else {
+      res
+        .status(200)
+        .send("Users successfully added to league database - userIds array.");
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .send(
+        "Unexpected error occurred when adding user" + " to database: " + err
+      );
+  }
+});
+
+//GET all the players id from the league schema
+app.get("/getleague/:leagueId", async (req, res) => {
+  console.log("in /getallplayers route (GET)");
+  try {
+    let thisLeague = await League.find({ leagueId: req.params.leagueId });
+    if (!thisLeague) {
+      return res
+        .status(400)
+        .message("No league with specified id was found in database.");
+    } else {
+      return res.status(200).json(JSON.stringify(thisLeague));
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .message(
+        "Unexpected error occurred when looking up league in database: " + err
       );
   }
 });

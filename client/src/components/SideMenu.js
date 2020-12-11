@@ -87,7 +87,7 @@ class SideMenu extends React.Component {
           className="sidemenu-item"
           onClick={() => this.props.changeMode(AppMode.DRAFT)}
         >
-          <span></span>&nbsp;Create League
+          <span></span>&nbsp;Draft Team
         </a>
 
         <a

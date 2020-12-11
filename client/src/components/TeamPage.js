@@ -73,48 +73,51 @@ class FeedPage extends React.Component {
 
   getFFP = () => {
     this.props.getCurrentData();
-
-    for (let i = 0; i < this.props.playerData.players.length; i++) {
-      for (let r = 0; r < this.state.players.length; ++r) {
-        if (
-          this.props.playerData.players[i].player.fullName ==
-          this.state.players[r].name
-        ) {
-          for (
-            let k = 0;
-            k < this.props.playerData.players[i].player.stats.length;
-            k++
+    console.log(this.props.playerData);
+    if(this.props.playerData != 0){
+      for (let i = 0; i < this.props.playerData.players.length; i++) {
+        for (let r = 0; r < this.state.players.length; ++r) {
+          if (
+            this.props.playerData.players[i].player.fullName ==
+            this.state.players[r].name
           ) {
-            // console.log("statSource: " + data.players[i].player.stats[k].statSourceId + "StatSplit: " + data.players[i].player.stats[k].statSplitTypeId)
-            if (
-              this.props.playerData.players[i].player.stats[k].seasonId ==
-                2020 &&
-              this.props.playerData.players[i].player.stats[k]
-                .scoringPeriodId == 0 &&
-              this.props.playerData.players[i].player.stats[k].statSourceId ==
-                0 &&
-              this.props.playerData.players[i].player.stats[k]
-                .statSplitTypeId == 0
+            for (
+              let k = 0;
+              k < this.props.playerData.players[i].player.stats.length;
+              k++
             ) {
-              //console.log(this.state.players[r].name + " Week " + this.props.playerData.players[i].player.stats[k].scoringPeriodId)
-              //console.log(this.props.playerData.players[i].player.stats[k].appliedTotal);
-              let temp = [];
-              temp.push(this.state.players[r].name);
-              temp.push(this.state.players[r].position);
-              temp.push(this.state.players[r].starter);
-              temp.push(
-                this.props.playerData.players[i].player.stats[k].appliedTotal
-              );
-              this.state.playerStats.push(temp);
-              //console.log(this.state.playerStats[0][0]);
-              console.log(this.state.playerStats[0][1]);
+              // console.log("statSource: " + data.players[i].player.stats[k].statSourceId + "StatSplit: " + data.players[i].player.stats[k].statSplitTypeId)
+              if (
+                this.props.playerData.players[i].player.stats[k].seasonId ==
+                  2020 &&
+                this.props.playerData.players[i].player.stats[k]
+                  .scoringPeriodId == 0 &&
+                this.props.playerData.players[i].player.stats[k].statSourceId ==
+                  0 &&
+                this.props.playerData.players[i].player.stats[k]
+                  .statSplitTypeId == 0
+              ) {
+                //console.log(this.state.players[r].name + " Week " + this.props.playerData.players[i].player.stats[k].scoringPeriodId)
+                //console.log(this.props.playerData.players[i].player.stats[k].appliedTotal);
+                let temp = [];
+                temp.push(this.state.players[r].name);
+                temp.push(this.state.players[r].position);
+                temp.push(this.state.players[r].starter);
+                temp.push(
+                  this.props.playerData.players[i].player.stats[k].appliedTotal
+                );
+                this.state.playerStats.push(temp);
+                //console.log(this.state.playerStats[0][0]);
+                console.log(this.state.playerStats[0][1]);
+              }
             }
           }
         }
       }
-    }
+    
 
     this.confirmRender();
+    }
   };
   confirmRender = () => {
     this.setState({ showRender: true });
@@ -231,8 +234,8 @@ class FeedPage extends React.Component {
           </thead>
           <tbody>
             {this.state.showRender == true ? this.renderTable() : null}
-
-            {/* {Object.keys(this.state.players).length === 0 ? (
+          
+            {/* {this.state.playerStats.length === undefined ? (
               <tr>
                 <td colSpan="5" style={{ fontStyle: "italic" }}>
                   Team not drafted yet
