@@ -23,6 +23,7 @@ class CreateEditAccountDialog extends React.Component {
       leagueID: "", //holding league id for each user
       formUpdated: false,
       confirmDelete: false,
+      // league: {}
     };
   }
 
@@ -227,6 +228,16 @@ class CreateEditAccountDialog extends React.Component {
         const resText = await res.text();
         this.props.done(resText, false);
       }
+
+      let league = {
+        leagueName: "",
+        userIds: this.state.accountName,
+        leagueId: this.state.leagueID
+      }
+
+      this.addTeamToLeague();
+      this.addLeague(league);
+
     } else {
       //use PUT route to update existing user account
       res = await fetch(url, {
@@ -248,6 +259,43 @@ class CreateEditAccountDialog extends React.Component {
       }
     }
   };
+
+  addTeamToLeague = async () => {
+    const url = 'http://localhost:8081/addplayerstoleague/' + this.state.leagueID + '/' + this.state.accountName;
+    const res = await fetch(url, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+        method: 'POST',
+        body: JSON.stringify(this.state.accountName)}); 
+    const msg = await res.text();
+    if (res.status != 200) {
+        console.log(msg);
+    } else {
+      console.log(msg);
+    }
+  }; 
+
+  addLeague = async (newData) => {
+    const url = 'http://localhost:8081/createleague';
+    const res = await fetch(url, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+        method: 'POST',
+        body: JSON.stringify(newData)}); 
+    const msg = await res.text();
+    if (res.status != 200) {
+        console.log(msg);
+    } else {
+      console.log(msg);
+    }
+  }; 
+
+
+
 
   //deleteAccount -- Called after confirms account deletion.
   //Uses DELETE server route to perform server deletion.
