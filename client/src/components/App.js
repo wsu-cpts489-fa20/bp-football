@@ -17,7 +17,7 @@ import DraftPage from "./DraftPage.js";
 const modeTitle = {};
 modeTitle[AppMode.LOGIN] = "Welcome to Fantasy Football";
 modeTitle[AppMode.TEAM] = "My Team";
-modeTitle[AppMode.ROUNDS] = "My Game History";
+modeTitle[AppMode.ROUNDS] = "Weekly Matchup";
 modeTitle[AppMode.ROUNDS_LOGROUND] = "Log New Game";
 //todo: remove ability to edit rounds
 modeTitle[AppMode.ROUNDS_EDITROUND] = "Edit Round";
