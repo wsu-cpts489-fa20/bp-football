@@ -3,9 +3,7 @@
 const AppMode = {
   LOGIN: "LoginMode",
   TEAM: "TeamMode",
-  ROUNDS: "RoundsMode",
-  ROUNDS_LOGROUND: "RoundsMode-LogRound",
-  ROUNDS_EDITROUND: "RoundsMode-EditRound",
+  MATCHUP: "MatchupMode",
   COURSES: "CoursesMode",
   DRAFT: "DraftMode",
   PROFILE: "ProfileMode",

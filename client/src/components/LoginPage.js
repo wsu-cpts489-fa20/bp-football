@@ -42,7 +42,7 @@ class LoginPage extends React.Component {
       loginBtnLabel: "Logging In...",
     });
 
-/*     //post NFL players to the backend collection
+    /*     //post NFL players to the backend collection
     var filters = {
           "players": {
               "limit": 1500,
@@ -96,7 +96,6 @@ class LoginPage extends React.Component {
     }
     //end */
 
-
     const url =
       "auth/login?username=" +
       this.emailInputRef.current.value +
@@ -117,7 +116,7 @@ class LoginPage extends React.Component {
     }
   };
 
-/*   //Add NFL Players to the collection
+  /*   //Add NFL Players to the collection
   addNFLPlayers = async (newData) => {
     const url = 'http://localhost:8081/addplayerstocollection';
     const res = await fetch(url, {
@@ -330,6 +329,9 @@ class LoginPage extends React.Component {
                 Reset your password
               </button>
             </p>
+            {/*
+              Disabling both OAuth buttons because it doesn't align with the functionality
+              of our app 
             <button
               type="button"
               className="btn btn-github"
@@ -346,7 +348,7 @@ class LoginPage extends React.Component {
             >
               <span className={this.state.googleIcon}></span>&nbsp;
               {this.state.googleLabel}
-            </button>
+            </button> */}
           </form>
           {this.state.showCreateAccountDialog ? (
             <CreateEditAccountDialog

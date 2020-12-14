@@ -23,15 +23,11 @@ class ModeBar extends React.Component {
           <span className="modebar-text">My Team</span>
         </a>
         <a
-          id="roundsModeBtn"
+          id="matchupModeBtn"
           className={
-            this.props.mode === AppMode.ROUNDS ||
-            this.props.mode === AppMode.ROUNDS_EDITROUND ||
-            this.props.mode === AppMode.ROUNDS_LOGROUND
-              ? " item-selected"
-              : null
+            this.props.mode === AppMode.MATCHUP ? " item-selected" : null
           }
-          onClick={() => this.props.changeMode(AppMode.ROUNDS)}
+          onClick={() => this.props.changeMode(AppMode.MATCHUP)}
         >
           <span className="modebar-icon  fa fa-history"></span>
           <span className="modebar-text">Games</span>

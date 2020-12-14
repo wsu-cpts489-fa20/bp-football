@@ -1,20 +1,15 @@
 branch-defaults:
   development:
-    environment: FantasyFootball-env
-  master:
-    environment: FantasyFootball-env
+    environment: Football-env
 environment-defaults:
-  FantasyFootball-env:
-    branch: development
-    repository: bp-football
-  SpeedgolfMern-env:
+  Football-env:
     branch: null
     repository: null
 global:
-  application_name: fantasy football
+  application_name: football
   default_ec2_keyname: null
   default_platform: Node.js 12 running on 64bit Amazon Linux 2
-  default_region: us-east-2
+  default_region: us-west-2
   include_git_submodules: true
   instance_profile: null
   platform_name: null

@@ -6,7 +6,7 @@ import CreateEditAccountDialog from "./CreateEditAccountDialog.js";
 import LoginPage from "./LoginPage.js";
 import AppMode from "./../AppMode.js";
 import TeamPage from "./TeamPage.js";
-import Rounds from "./Rounds.js";
+import Matchup from "./Matchup.js";
 import CoursesPage from "./CoursesPage.js";
 import Profile from "./ProfilePage";
 import AboutBox from "./AboutBox.js";
@@ -17,10 +17,7 @@ import DraftPage from "./DraftPage.js";
 const modeTitle = {};
 modeTitle[AppMode.LOGIN] = "Welcome to Fantasy Football";
 modeTitle[AppMode.TEAM] = "My Team";
-modeTitle[AppMode.ROUNDS] = "Weekly Matchup";
-modeTitle[AppMode.ROUNDS_LOGROUND] = "Log New Game";
-//todo: remove ability to edit rounds
-modeTitle[AppMode.ROUNDS_EDITROUND] = "Edit Round";
+modeTitle[AppMode.MATCHUP] = "Weekly Matchup";
 modeTitle[AppMode.COURSES] = "Courses";
 modeTitle[AppMode.DRAFT] = "Draft";
 modeTitle[AppMode.PROFILE] = "Profile";
@@ -28,9 +25,7 @@ modeTitle[AppMode.PROFILE] = "Profile";
 const modeToPage = {};
 modeToPage[AppMode.LOGIN] = LoginPage;
 modeToPage[AppMode.TEAM] = TeamPage;
-modeToPage[AppMode.ROUNDS] = Rounds;
-modeToPage[AppMode.ROUNDS_LOGROUND] = Rounds;
-modeToPage[AppMode.ROUNDS_EDITROUND] = Rounds;
+modeToPage[AppMode.MATCHUP] = Matchup;
 modeToPage[AppMode.COURSES] = CoursesPage;
 modeToPage[AppMode.DRAFT] = DraftPage;
 modeToPage[AppMode.PROFILE] = ProfilePage;
@@ -64,7 +59,7 @@ class App extends React.Component {
             this.setState({
               userObj: obj.user,
               authenticated: true,
-              mode: AppMode.ROUNDS, //We're authenticated so can get into the app.
+              mode: AppMode.MATCHUP, //We're authenticated so can get into the app.
             });
           }
         });
