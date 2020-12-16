@@ -1,4 +1,5 @@
 import React from "react";
+import { async } from "regenerator-runtime";
 import AppMode from "./../AppMode.js";
 
 class DraftPage extends React.Component {
@@ -6,6 +7,8 @@ class DraftPage extends React.Component {
     super(props);
     this.state = {
       NFLPlayerList: [],
+      leaguePlayers: [],
+      leagueData:{},
       QBList: [],
       RBList: [],
       WRList: [],
@@ -61,23 +64,96 @@ class DraftPage extends React.Component {
         });  
       }
     }
+    this.getLeagueData();
   }
 
-  //Add players to the backend
+  //get the data from the league using the leagueId
+  getLeagueData = async() => {
+    // let data = await fetch("/getleague/" + this.props.userObj.leagueId);
+    // data = await data.json();
+    // console.log("data: ");
+    // console.log(data);
+    // const obj = JSON.parse(data);
+    let response = await fetch("/getleague/555"); // OR + this.props.userObj.leagueId);
+      response = await response.json();
+      const obj = JSON.parse(response);
+      console.log(obj);
+    console.log("Inside getLeagueData - printing league object");
+    this.setState({leagueData: obj});
+  }
+
+  //get all players that are in the league
+  getListOfAllPlayersFromLeague = async() => {
+    var unavailablePlayers = []; //players already owned by other users
+    var leagueUserIds = this.state.leagueData[0].userIds; //all the user from the league
+    
+    var i;
+    for (i = 0; i < leagueUserIds.length(); i++) {
+      let data = await fetch("/users/" + leagueUserIds[i]);
+      data = await data.json();
+      const obj = JSON.parse(data);
+
+      var j;
+      for (j = 0; j < obj.players.length(); j++) {
+        var player = obj.players[i];
+        unavailablePlayers.push(player)
+      }
+    }
+
+    this.setState({leaguePlayers: unavailablePlayers}); 
+
+  }
+
+  validatePlayers = () => {
+    this.getListOfAllPlayersFromLeague();
+
+    var duplicatePlayers = [];
+    var i, j;
+    for (i = 0; i < this.state.leaguePlayers.length(); i++) {
+      if (this.state.qb === this.state.leaguePlayers[i]) {
+        duplicatePlayers.push(this.state.qb);
+      } else if (this.state.rb === this.state.leaguePlayers[i]) {
+        duplicatePlayers.push(this.state.rb);
+      } else if (this.state.wr === this.state.leaguePlayers[i]) {
+        duplicatePlayers.push(this.state.wr);
+      } else if (this.state.te === this.state.leaguePlayers[i]) {
+        duplicatePlayers.push(this.state.te);
+      } else if (this.state.k === this.state.leaguePlayers[i]) {
+        duplicatePlayers.push(this.state.k);
+      } else {
+        continue;
+      }
+    }
+
+    if (duplicatePlayers.length() >= 1) { //duplicate players
+      alert("Cannot assign following players: " + duplicatePlayers.join());
+      return false;
+    }
+    return true;
+  }
+
+  //Add players to the backend if players aren't selected by other members in the league
   addPlayers = async (newData) => {
-    const url = 'http://localhost:8081/addplayers/' + this.props.userObj.id;
-    const res = await fetch(url, {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            },
-        method: 'POST',
-        body: JSON.stringify(newData)}); 
-    const msg = await res.text();
-    if (res.status != 200) {
+    this.getLeagueData();
+    var validate = this.validatePlayers();
+
+    if (validate === true) {
+      const url = 'http://localhost:8081/addplayers/' + this.props.userObj.id;
+      const res = await fetch(url, {
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+              },
+          method: 'POST',
+          body: JSON.stringify(newData)}); 
+      const msg = await res.text();
+      if (res.status != 200) {
+          console.log(msg);
+      } else {
         console.log(msg);
+      }
     } else {
-      console.log(msg);
+      alert("Players you have selected are taken by other users in the league. Please select new players!");
     }
   }; 
 

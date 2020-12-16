@@ -13,6 +13,7 @@ import AboutBox from "./AboutBox.js";
 import Draft from "./DraftPage.js";
 import ProfilePage from "./ProfilePage";
 import DraftPage from "./DraftPage.js";
+import { async } from "regenerator-runtime";
 
 const modeTitle = {};
 modeTitle[AppMode.LOGIN] = "Welcome to Fantasy Football";
@@ -212,6 +213,7 @@ class App extends React.Component {
           changeMode={this.handleChangeMode}
           playerData={this.state.playerData}
           getCurrentData={this.getCurrentData}
+          getLeagueData={this.getLeagueData}
         />
         <ModeBar
           mode={this.state.mode}
@@ -226,6 +228,7 @@ class App extends React.Component {
           refreshOnUpdate={this.refreshOnUpdate}
           playerData={this.state.playerData}
           getCurrentData={this.getCurrentData}
+          getLeagueData={this.getLeagueData}
         />
       </div>
     );
