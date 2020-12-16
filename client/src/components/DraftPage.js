@@ -209,35 +209,35 @@ class DraftPage extends React.Component {
         <center>
           <br/>
           QB: 
-          <select style={{width: `${150}px`}} value={this.state.qb}
+          <select id="qb" style={{width: `${150}px`}} value={this.state.qb}
                   onChange={(value) => { this.setState({ qb: value.target.value }); }}>
             {(this.state.QBList).map(MakeItem)}
           </select>
           <br/>
           <br/>
           RB: 
-          <select style={{width: `${150}px`}} value={this.state.rb}
+          <select id="rb" style={{width: `${150}px`}} value={this.state.rb}
                   onChange={(value) => { this.setState({ rb: value.target.value }); }}>          
             {(this.state.RBList).map(MakeItem)}
           </select>
           <br/>
           <br/>
           WR: 
-          <select style={{width: `${150}px`}} value={this.state.wr}
+          <select id="wr" style={{width: `${150}px`}} value={this.state.wr}
                   onChange={(value) => { this.setState({ wr: value.target.value }); }}>
             {(this.state.WRList).map(MakeItem)}
           </select>
           <br/>
           <br/>
           TE: 
-          <select style={{width: `${150}px`}} value={this.state.te}
+          <select id="te" style={{width: `${150}px`}} value={this.state.te}
                   onChange={(value) => { this.setState({ te: value.target.value }); }}>
             {(this.state.TEList).map(MakeItem)}
           </select>
           <br/>
           <br/>
           K: 
-          <select style={{width: `${150}px`}} value={this.state.k}
+          <select id="k" style={{width: `${150}px`}} value={this.state.k}
                   onChange={(value) => { this.setState({ k: value.target.value }); }}>
             {(this.state.KList).map(MakeItem)}
           </select>
@@ -251,6 +251,7 @@ class DraftPage extends React.Component {
           <br/>
           {/* <br/> */}
           <button
+              id="draftTeamBtn"
               type="submit"
               className="btn-color-theme btn btn-primary btn-block"
               onClick={this.handleSubmit}

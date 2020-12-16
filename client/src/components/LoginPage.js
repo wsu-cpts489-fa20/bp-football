@@ -302,6 +302,7 @@ class LoginPage extends React.Component {
             </label>
             <p className="bg-danger" id="feedback" style={{ fontSize: 16 }} />
             <button
+              id="loginBtn"
               type="submit"
               className="btn-color-theme btn btn-primary btn-block login-btn"
             >
