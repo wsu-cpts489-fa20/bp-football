@@ -134,10 +134,10 @@ class DraftPage extends React.Component {
 
   //Add players to the backend if players aren't selected by other members in the league
   addPlayers = async (newData) => {
-    this.getLeagueData();
-    var validate = this.validatePlayers();
+    // this.getLeagueData();
+    // var validate = this.validatePlayers();
 
-    if (validate === true) {
+    // if (validate === true) {
       const url = 'http://localhost:8081/addplayers/' + this.props.userObj.id;
       const res = await fetch(url, {
           headers: {
@@ -152,9 +152,9 @@ class DraftPage extends React.Component {
       } else {
         console.log(msg);
       }
-    } else {
-      alert("Players you have selected are taken by other users in the league. Please select new players!");
-    }
+    // } else {
+    //   alert("Players you have selected are taken by other users in the league. Please select new players!");
+    // }
   }; 
 
 
