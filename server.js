@@ -744,7 +744,7 @@ app.post("/addplayers/:userId", async (req, res, next) => {
     let status = await User.updateOne(
       { id: req.params.userId },
       // { $push: { "games.0.players": req.body } }
-      { $push: { players: req.body } } //add the players into the database
+      { $push: { team: req.body } } //add the players into the database
     );
     if (status.nModified != 1) {
       //Should never happen!
