@@ -5,4 +5,4 @@ getting the ESPN Fantasy API working, we stored all current NFL players in our d
 
 We were also not able to deploy the application on AWS. The errors that occured in the logs were puzzling and despite our best efforts, we were not able to figure out why the deploys failed.
 
-The file that had the most significant changes up for review is DraftPage.js. Other files were touched up to add functionality elsewhere, however DraftPage was essentially redone entirey.
+The file that had the most significant changes up for review is [DraftPage.js](https://github.com/wsu-cpts489-fa20/bp-football/blob/master/client/src/components/DraftPage.js). Other files were touched up to add functionality elsewhere, however DraftPage was essentially redone entirey.
