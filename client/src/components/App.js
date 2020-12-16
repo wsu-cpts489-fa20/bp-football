@@ -5,39 +5,37 @@ import ModeBar from "./ModeBar.js";
 import CreateEditAccountDialog from "./CreateEditAccountDialog.js";
 import LoginPage from "./LoginPage.js";
 import AppMode from "./../AppMode.js";
-import FeedPage from "./FeedPage.js";
-import Rounds from "./Rounds.js";
+import TeamPage from "./TeamPage.js";
+import Matchup from "./Matchup.js";
 import CoursesPage from "./CoursesPage.js";
 import Profile from "./ProfilePage";
 import AboutBox from "./AboutBox.js";
-import Draft from "./Draft.js";
+import Draft from "./DraftPage.js";
 import ProfilePage from "./ProfilePage";
+import DraftPage from "./DraftPage.js";
+import { async } from "regenerator-runtime";
 
 const modeTitle = {};
 modeTitle[AppMode.LOGIN] = "Welcome to Fantasy Football";
-modeTitle[AppMode.FEED] = "Activity Feed";
-modeTitle[AppMode.ROUNDS] = "My Game History";
-modeTitle[AppMode.ROUNDS_LOGROUND] = "Log New Game";
-//todo: remove ability to edit rounds
-modeTitle[AppMode.ROUNDS_EDITROUND] = "Edit Round";
+modeTitle[AppMode.TEAM] = "My Team";
+modeTitle[AppMode.MATCHUP] = "Weekly Matchup";
 modeTitle[AppMode.COURSES] = "Courses";
 modeTitle[AppMode.DRAFT] = "Draft";
 modeTitle[AppMode.PROFILE] = "Profile";
 
 const modeToPage = {};
 modeToPage[AppMode.LOGIN] = LoginPage;
-modeToPage[AppMode.FEED] = FeedPage;
-modeToPage[AppMode.ROUNDS] = Rounds;
-modeToPage[AppMode.ROUNDS_LOGROUND] = Rounds;
-modeToPage[AppMode.ROUNDS_EDITROUND] = Rounds;
+modeToPage[AppMode.TEAM] = TeamPage;
+modeToPage[AppMode.MATCHUP] = Matchup;
 modeToPage[AppMode.COURSES] = CoursesPage;
-modeToPage[AppMode.DRAFT] = Draft;
+modeToPage[AppMode.DRAFT] = DraftPage;
 modeToPage[AppMode.PROFILE] = ProfilePage;
 
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
+      league: "",
       mode: AppMode.LOGIN,
       menuOpen: false,
       authenticated: false,
@@ -47,7 +45,7 @@ class App extends React.Component {
       statusMsg: "",
       showAboutDialog: false,
       showDraftDialog: false,
-      playerData: []
+      playerData: [],
     };
   }
 
@@ -62,7 +60,7 @@ class App extends React.Component {
             this.setState({
               userObj: obj.user,
               authenticated: true,
-              mode: AppMode.FEED, //We're authenticated so can get into the app.
+              mode: AppMode.MATCHUP, //We're authenticated so can get into the app.
             });
           }
         });
@@ -141,29 +139,31 @@ class App extends React.Component {
     this.setState({ statusMsg: "" });
   };
 
-  getCurrentData = async() => {
+  getCurrentData = async () => {
     var filters = {
-      "players": {
-          "limit": 1500,
-          "sortDraftRanks": {
-              "sortPriority": 100,
-              "sortAsc": true,
-              "value": "STANDARD"
-          }
-      }
+      players: {
+        limit: 1500,
+        sortDraftRanks: {
+          sortPriority: 100,
+          sortAsc: true,
+          value: "STANDARD",
+        },
+      },
     };
-  
+
     var options = {
-        "headers": {
-            "x-fantasy-filter": JSON.stringify(filters)
-        }
+      headers: {
+        "x-fantasy-filter": JSON.stringify(filters),
+      },
     };
-    
-    const response = await fetch('https://fantasy.espn.com/apis/v3/games/FFL/seasons/2020/segments/0/leaguedefaults/1?view=kona_player_info', options);
+
+    const response = await fetch(
+      "https://fantasy.espn.com/apis/v3/games/FFL/seasons/2020/segments/0/leaguedefaults/1?view=kona_player_info",
+      options
+    );
     const data = await response.json();
     this.setState({ playerData: data });
-
-  }
+  };
   render() {
     const ModePage = modeToPage[this.state.mode];
     return (
@@ -172,7 +172,7 @@ class App extends React.Component {
           <AboutBox close={() => this.setState({ showAboutDialog: false })} />
         ) : null} */}
         {this.state.showDraftDialog ? (
-          <Draft close={this.closeDraft} userObj={this.state.userObj} />
+          <DraftPage close={this.closeDraft} userObj={this.state.userObj} />
         ) : null}
         {this.state.statusMsg != "" ? (
           <div className="status-msg">
@@ -211,6 +211,9 @@ class App extends React.Component {
           }}
           openDraft={this.openDraft}
           changeMode={this.handleChangeMode}
+          playerData={this.state.playerData}
+          getCurrentData={this.getCurrentData}
+          getLeagueData={this.getLeagueData}
         />
         <ModeBar
           mode={this.state.mode}
@@ -225,6 +228,7 @@ class App extends React.Component {
           refreshOnUpdate={this.refreshOnUpdate}
           playerData={this.state.playerData}
           getCurrentData={this.getCurrentData}
+          getLeagueData={this.getLeagueData}
         />
       </div>
     );

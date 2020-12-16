@@ -91,6 +91,11 @@ var playerSchema = new Schema({
   name: String,
   starter: Boolean
 });
+var nflPlayerSchema = new Schema({
+  playerId: Number,
+  name: String,
+  position: String
+});
 var gameSchema = new Schema({
   week: {
     type: String,
@@ -167,7 +172,11 @@ var userSchema = new Schema({
   league: [leagueSchema]
 });
 
-var User = _mongoose["default"].model("User", userSchema); //////////////////////////////////////////////////////////////////////////
+var User = _mongoose["default"].model("User", userSchema);
+
+var Player = _mongoose["default"].model("Player", nflPlayerSchema);
+
+var League = _mongoose["default"].model("League", leagueSchema); //////////////////////////////////////////////////////////////////////////
 //PASSPORT SET-UP
 //The following code sets up the app with OAuth authentication using
 //the 'github' strategy in passport.js.
@@ -451,7 +460,7 @@ app.use((0, _expressSession["default"])({
 
 app.get("/auth/github", _passport["default"].authenticate("github")); //CALLBACK route:  GitHub will call this route after the
 //OAuth authentication process is complete.
-//req.isAuthenticated() tells us whether authentication was successful.
+//req.isAuthenticated() tells us whether authentication was successful. 
 
 app.get("/auth/github/callback", _passport["default"].authenticate("github", {
   failureRedirect: "/"
@@ -1226,5 +1235,406 @@ app.post("/players/:userId", /*#__PURE__*/function () {
 
   return function (_x43, _x44, _x45) {
     return _ref15.apply(this, arguments);
+  };
+}()); //CREATE player route: Adds a new nfl players to the players collection (POST)
+
+app.post("/addplayerstocollection", /*#__PURE__*/function () {
+  var _ref16 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee16(req, res, next) {
+    var thisPlayer;
+    return _regeneratorRuntime["default"].wrap(function _callee16$(_context16) {
+      while (1) {
+        switch (_context16.prev = _context16.next) {
+          case 0:
+            console.log("in /users route (POST) with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
+
+            if (!(!req.body.hasOwnProperty("playerId") || !req.body.hasOwnProperty("name") || !req.body.hasOwnProperty("position"))) {
+              _context16.next = 3;
+              break;
+            }
+
+            return _context16.abrupt("return", res.status(400).send("/users POST request formulated incorrectly. " + "It must contain playerId, name, and position fields in message body."));
+
+          case 3:
+            _context16.prev = 3;
+            _context16.next = 6;
+            return Player.findOne({
+              playerId: req.body.playerId
+            });
+
+          case 6:
+            thisPlayer = _context16.sent;
+
+            if (!thisPlayer) {
+              _context16.next = 11;
+              break;
+            }
+
+            //account already exists
+            res.status(400).send("There is already player with similar id: '" + req.body.playerId + "'.");
+            _context16.next = 15;
+            break;
+
+          case 11:
+            _context16.next = 13;
+            return new Player({
+              playerId: req.body.playerId,
+              name: req.body.name,
+              position: req.body.position
+            }).save();
+
+          case 13:
+            thisPlayer = _context16.sent;
+            return _context16.abrupt("return", res.status(201).send("New player for '" + req.body.playerId + "' successfully created."));
+
+          case 15:
+            _context16.next = 20;
+            break;
+
+          case 17:
+            _context16.prev = 17;
+            _context16.t0 = _context16["catch"](3);
+            return _context16.abrupt("return", res.status(400).send("Unexpected error occurred when adding or looking up player in database. " + _context16.t0));
+
+          case 20:
+          case "end":
+            return _context16.stop();
+        }
+      }
+    }, _callee16, null, [[3, 17]]);
+  }));
+
+  return function (_x46, _x47, _x48) {
+    return _ref16.apply(this, arguments);
+  };
+}()); //READ players route: Returns all players from players collection (GET)
+
+app.get("/getallplayers/", /*#__PURE__*/function () {
+  var _ref17 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee17(req, res) {
+    var thisPlayer;
+    return _regeneratorRuntime["default"].wrap(function _callee17$(_context17) {
+      while (1) {
+        switch (_context17.prev = _context17.next) {
+          case 0:
+            console.log("in /getallplayers route (GET)");
+            _context17.prev = 1;
+            _context17.next = 4;
+            return Player.find({});
+
+          case 4:
+            thisPlayer = _context17.sent;
+
+            if (thisPlayer) {
+              _context17.next = 9;
+              break;
+            }
+
+            return _context17.abrupt("return", res.status(400).message("No player was found in database."));
+
+          case 9:
+            return _context17.abrupt("return", res.status(200).json(JSON.stringify(thisPlayer)));
+
+          case 10:
+            _context17.next = 16;
+            break;
+
+          case 12:
+            _context17.prev = 12;
+            _context17.t0 = _context17["catch"](1);
+            console.log();
+            return _context17.abrupt("return", res.status(400).message("Unexpected error occurred when looking up players in database: " + _context17.t0));
+
+          case 16:
+          case "end":
+            return _context17.stop();
+        }
+      }
+    }, _callee17, null, [[1, 12]]);
+  }));
+
+  return function (_x49, _x50) {
+    return _ref17.apply(this, arguments);
+  };
+}()); //READ players route: Returns all players associated
+//with a given position from players collection (GET)
+
+app.get("/getallplayers/:position", /*#__PURE__*/function () {
+  var _ref18 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee18(req, res) {
+    var thisPlayer;
+    return _regeneratorRuntime["default"].wrap(function _callee18$(_context18) {
+      while (1) {
+        switch (_context18.prev = _context18.next) {
+          case 0:
+            console.log("in /getallplayers route (GET)");
+            _context18.prev = 1;
+            _context18.next = 4;
+            return Player.find({
+              position: req.params.position
+            });
+
+          case 4:
+            thisPlayer = _context18.sent;
+
+            if (thisPlayer) {
+              _context18.next = 9;
+              break;
+            }
+
+            return _context18.abrupt("return", res.status(400).message("No player with specified position was found in database."));
+
+          case 9:
+            return _context18.abrupt("return", res.status(200).json(JSON.stringify(thisPlayer)));
+
+          case 10:
+            _context18.next = 16;
+            break;
+
+          case 12:
+            _context18.prev = 12;
+            _context18.t0 = _context18["catch"](1);
+            console.log();
+            return _context18.abrupt("return", res.status(400).message("Unexpected error occurred when looking up players in database: " + _context18.t0));
+
+          case 16:
+          case "end":
+            return _context18.stop();
+        }
+      }
+    }, _callee18, null, [[1, 12]]);
+  }));
+
+  return function (_x51, _x52) {
+    return _ref18.apply(this, arguments);
+  };
+}());
+/* //READ players route: Return player object using their name
+app.get("/getplayerwithname/:name", async (req, res) => {
+  console.log(
+    "in /getplayerwithname route (GET)");
+  try {
+    let thisPlayer = await Player.find({ position: req.params.name });
+    if (!thisPlayer) {
+      return res
+        .status(400)
+        .message(
+          "No player with specified position was found in database."
+        );
+    } else {
+      return res.status(200).json(JSON.stringify(thisPlayer));
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .message(
+        "Unexpected error occurred when looking up players in database: " + err
+      );
+  }
+});
+
+//READ players route: Returns all players associated
+//with a given position from players collection (GET)
+app.get("/getplayerswithid/:playerId", async (req, res) => {
+  console.log(
+    "in /getplayerswithid route (GET)");
+  try {
+    let thisPlayer = await Player.find({ position: req.params.playerId });
+    if (!thisPlayer) {
+      return res
+        .status(400)
+        .message(
+          "No player with specified playerId was found in database."
+        );
+    } else {
+      return res.status(200).json(JSON.stringify(thisPlayer));
+    }
+  } catch (err) {
+    console.log();
+    return res
+      .status(400)
+      .message(
+        "Unexpected error occurred when looking up players in database: " + err
+      );
+  }
+}); */
+//Routes for League Schema
+//CREATE league route: Adds a new league to the database (POST)
+
+app.post("/createleague", /*#__PURE__*/function () {
+  var _ref19 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee19(req, res, next) {
+    var thisLeague;
+    return _regeneratorRuntime["default"].wrap(function _callee19$(_context19) {
+      while (1) {
+        switch (_context19.prev = _context19.next) {
+          case 0:
+            console.log("in /createleague route (POST) with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
+
+            if (!(!req.body.hasOwnProperty("leagueName") || !req.body.hasOwnProperty("userIds") || !req.body.hasOwnProperty("leagueId"))) {
+              _context19.next = 3;
+              break;
+            }
+
+            return _context19.abrupt("return", res.status(400).send("/createleague POST request formulated incorrectly. " + "It must contain leagueName, userIds, and leagueId fields in message body."));
+
+          case 3:
+            _context19.prev = 3;
+            _context19.next = 6;
+            return League.findOne({
+              leagueId: req.body.leagueId
+            });
+
+          case 6:
+            thisLeague = _context19.sent;
+
+            if (!thisLeague) {
+              _context19.next = 11;
+              break;
+            }
+
+            //account already exists
+            res.status(400).send("There is already league with similar id: '" + req.body.leagueId + "'.");
+            _context19.next = 15;
+            break;
+
+          case 11:
+            _context19.next = 13;
+            return new League({
+              leagueName: req.body.leagueName,
+              userIds: req.body.userIds,
+              leagueId: req.body.leagueId
+            }).save();
+
+          case 13:
+            thisLeague = _context19.sent;
+            return _context19.abrupt("return", res.status(201).send("New league with id'" + req.body.leagueId + "' successfully created."));
+
+          case 15:
+            _context19.next = 20;
+            break;
+
+          case 17:
+            _context19.prev = 17;
+            _context19.t0 = _context19["catch"](3);
+            return _context19.abrupt("return", res.status(400).send("Unexpected error occurred when adding or looking up player in database. " + _context19.t0));
+
+          case 20:
+          case "end":
+            return _context19.stop();
+        }
+      }
+    }, _callee19, null, [[3, 17]]);
+  }));
+
+  return function (_x53, _x54, _x55) {
+    return _ref19.apply(this, arguments);
+  };
+}()); // //Add players to league - POST route
+// // -- adds user id to the userIds array in league schema
+
+app.post("/addplayerstoleague/:leagueId/:userId", /*#__PURE__*/function () {
+  var _ref20 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee20(req, res, next) {
+    var status;
+    return _regeneratorRuntime["default"].wrap(function _callee20$(_context20) {
+      while (1) {
+        switch (_context20.prev = _context20.next) {
+          case 0:
+            console.log("in /games/players (POST) route with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
+
+            if (req.params.hasOwnProperty("userId")) {
+              _context20.next = 3;
+              break;
+            }
+
+            return _context20.abrupt("return", res.status(400).send("POST request on /games/players formulated incorrectly." + "Body must contain all 1 required field - userId"));
+
+          case 3:
+            _context20.prev = 3;
+            _context20.next = 6;
+            return League.updateOne( // { $push: { "games.0.players": req.body } }
+            {
+              $addToSet: {
+                "userIds": req.params.userId
+              }
+            } //add the user into the userIds array
+            );
+
+          case 6:
+            status = _context20.sent;
+
+            if (status.nModified != 1) {
+              //Should never happen!
+              res.status(400).send("Unexpected error occurred when adding userId to the array in league");
+            } else {
+              res.status(200).send("Users successfully added to league database - userIds array.");
+            }
+
+            _context20.next = 14;
+            break;
+
+          case 10:
+            _context20.prev = 10;
+            _context20.t0 = _context20["catch"](3);
+            console.log(_context20.t0);
+            return _context20.abrupt("return", res.status(400).send("Unexpected error occurred when adding user" + " to database: " + _context20.t0));
+
+          case 14:
+          case "end":
+            return _context20.stop();
+        }
+      }
+    }, _callee20, null, [[3, 10]]);
+  }));
+
+  return function (_x56, _x57, _x58) {
+    return _ref20.apply(this, arguments);
+  };
+}()); //GET all the players id from the league schema
+
+app.get("/getleague/:leagueId", /*#__PURE__*/function () {
+  var _ref21 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime["default"].mark(function _callee21(req, res) {
+    var thisLeague;
+    return _regeneratorRuntime["default"].wrap(function _callee21$(_context21) {
+      while (1) {
+        switch (_context21.prev = _context21.next) {
+          case 0:
+            console.log("in /getallplayers route (GET)");
+            _context21.prev = 1;
+            _context21.next = 4;
+            return League.find({
+              leagueId: req.params.leagueId
+            });
+
+          case 4:
+            thisLeague = _context21.sent;
+
+            if (thisLeague) {
+              _context21.next = 9;
+              break;
+            }
+
+            return _context21.abrupt("return", res.status(400).message("No league with specified id was found in database."));
+
+          case 9:
+            return _context21.abrupt("return", res.status(200).json(JSON.stringify(thisLeague)));
+
+          case 10:
+            _context21.next = 16;
+            break;
+
+          case 12:
+            _context21.prev = 12;
+            _context21.t0 = _context21["catch"](1);
+            console.log();
+            return _context21.abrupt("return", res.status(400).message("Unexpected error occurred when looking up league in database: " + _context21.t0));
+
+          case 16:
+          case "end":
+            return _context21.stop();
+        }
+      }
+    }, _callee21, null, [[1, 12]]);
+  }));
+
+  return function (_x59, _x60) {
+    return _ref21.apply(this, arguments);
   };
 }());

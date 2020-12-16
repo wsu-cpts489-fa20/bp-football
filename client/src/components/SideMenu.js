@@ -7,7 +7,7 @@ class SideMenu extends React.Component {
   //determine mode.
   renderModeMenuItems = () => {
     switch (this.props.mode) {
-      case AppMode.FEED:
+      case AppMode.TEAM:
         return (
           <div>
             <a className="sidemenu-item">
@@ -87,7 +87,7 @@ class SideMenu extends React.Component {
           className="sidemenu-item"
           onClick={() => this.props.changeMode(AppMode.DRAFT)}
         >
-          <span></span>&nbsp;Create League
+          <span></span>&nbsp;Draft Team
         </a>
 
         <a
@@ -100,7 +100,6 @@ class SideMenu extends React.Component {
         <a id="logOutBtn" className="sidemenu-item" onClick={this.props.logOut}>
           <span className="fa fa-sign-out-alt"></span>&nbsp;Log Out
         </a>
-        {/*Todo: if user is a commissioner, have a 'League Setting' option? */}
       </div>
     );
   }

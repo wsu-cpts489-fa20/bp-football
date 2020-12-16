@@ -41,6 +41,61 @@ class LoginPage extends React.Component {
       loginBtnIcon: "fa fa-spin fa-spinner",
       loginBtnLabel: "Logging In...",
     });
+
+    /*     //post NFL players to the backend collection
+    var filters = {
+          "players": {
+              "limit": 1500,
+              "sortDraftRanks": {
+                  "sortPriority": 100,
+                  "sortAsc": true,
+                  "value": "STANDARD"
+              }
+          }
+        };
+    
+        var options = {
+            "headers": {
+                "x-fantasy-filter": JSON.stringify(filters)
+            }
+        };
+
+    const response = await fetch('https://fantasy.espn.com/apis/v3/games/FFL/seasons/2020/segments/0/leaguedefaults/1?view=kona_player_info', options);
+    const data = await response.json();
+
+    //console.log(data);
+    var i;
+    for (i = 0; i < data.players.length; i++) {
+      if (data.players[i].player.defaultPositionId != 16) {
+        console.log(data.players[i].player.fullName + "     " + data.players[i].player.defaultPositionId);
+
+        var pos = data.players[i].player.defaultPositionId;
+        var position = "";
+        if (pos == 1) {
+          position = "QB";
+        } else if (pos == 2) {
+          position = "RB";
+        } else if (pos == 3) {
+          position = "WR";
+        } else if (pos == 4) {
+          position = "TE";
+        } else if (pos == 5) {
+          position = "Kicker";
+        } else {
+          position = "Unknown";
+        }
+
+        var player = {};
+        player.playerId = i;
+        player.name = data.players[i].player.fullName;
+        player.position = position;
+
+        this.addNFLPlayers(player);
+      }
+      
+    }
+    //end */
+
     const url =
       "auth/login?username=" +
       this.emailInputRef.current.value +
@@ -60,6 +115,24 @@ class LoginPage extends React.Component {
       });
     }
   };
+
+  /*   //Add NFL Players to the collection
+  addNFLPlayers = async (newData) => {
+    const url = 'http://localhost:8081/addplayerstocollection';
+    const res = await fetch(url, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+        method: 'POST',
+        body: JSON.stringify(newData)}); 
+    const msg = await res.text();
+    if (res.status != 200) {
+        console.log(msg);
+    } else {
+      console.log(msg);
+    }
+} */
 
   //accountCreateDone -- Called by child CreateAccountDialog component when
   //user attempted to create new account. Hide the dialog and display
@@ -229,6 +302,7 @@ class LoginPage extends React.Component {
             </label>
             <p className="bg-danger" id="feedback" style={{ fontSize: 16 }} />
             <button
+              id="loginBtn"
               type="submit"
               className="btn-color-theme btn btn-primary btn-block login-btn"
             >
@@ -256,6 +330,9 @@ class LoginPage extends React.Component {
                 Reset your password
               </button>
             </p>
+            {/*
+              Disabling both OAuth buttons because it doesn't align with the functionality
+              of our app 
             <button
               type="button"
               className="btn btn-github"
@@ -272,7 +349,7 @@ class LoginPage extends React.Component {
             >
               <span className={this.state.googleIcon}></span>&nbsp;
               {this.state.googleLabel}
-            </button>
+            </button> */}
           </form>
           {this.state.showCreateAccountDialog ? (
             <CreateEditAccountDialog

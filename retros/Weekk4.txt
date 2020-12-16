@@ -1,0 +1,4 @@
+Meeting date: 12/07/2020
+As a group our communication and work effort has started a lot earler compared to in the past. Work was getting done sooner and everyone was making updates in the team chat. One
+thing we could work on as a group was the commit activity. We tend to get lost in the code and forget to commit as much as we should, which would not only benefit our workflow
+but also it would help others break down the changes faster. 
